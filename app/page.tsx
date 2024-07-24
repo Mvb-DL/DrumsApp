@@ -13,6 +13,9 @@ export default function Home() {
         <Link href="/auth/register">
           <button className={styles.button}>Register</button>
         </Link>
+        <Link href="/drumplayer">
+          <button className={styles.button}>Drum Player</button>
+        </Link>
       </div>
     </div>
   );

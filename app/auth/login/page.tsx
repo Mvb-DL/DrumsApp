@@ -16,6 +16,11 @@ export default function Login() {
           <span>Back to Home</span>
         </Link>
       </div>
+      <div className={styles.backLink}>
+        <Link href="/drumplayer">
+          <span>Go to Drum Player</span>
+        </Link>
+      </div>
     </div>
   );
 }
