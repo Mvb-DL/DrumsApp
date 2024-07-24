@@ -37,7 +37,13 @@ export default function Login() {
         setRole(result.role);
         // Set the user in AuthContext
         login({ id: result.id, surname: result.lastName, name: result.firstName, email: result.email, role: result.role });
-        router.push('/drumplayer');
+
+        // Redirect based on role
+        if (result.role === 'admin') {
+          router.push('/dashboard');
+        } else {
+          router.push('/drumplayer');
+        }
       } else {
         const result = await response.json();
         console.log('Login failed:', result); // Debug log

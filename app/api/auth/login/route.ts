@@ -18,6 +18,7 @@ export async function POST(request: NextRequest) {
     const userTeacher = await prisma.teacher.findUnique({ where: { email } });
     const userCustomer = await prisma.customer.findUnique({ where: { email } });
     const userStudent = await prisma.student.findUnique({ where: { email } });
+    const userAdmin = await prisma.admin.findUnique({ where: { email } });
 
     let user = null;
     if (userTeacher && bcrypt.compareSync(password, userTeacher.password)) {
@@ -26,6 +27,8 @@ export async function POST(request: NextRequest) {
       user = { ...userCustomer, role: 'customer' };
     } else if (userStudent && bcrypt.compareSync(password, userStudent.password)) {
       user = { ...userStudent, role: 'student' };
+    } else if (userAdmin && bcrypt.compareSync(password, userAdmin.password)) {
+      user = { ...userAdmin, role: 'admin' };
     }
 
     if (user) {

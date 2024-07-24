@@ -1,12 +1,21 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '../context/AuthContext'; // Adjust the path if necessary
 import Layout from '../components/Layout'; // Adjust the path if necessary
 import styles from './drumplayer.module.scss'; // Assuming you have SCSS for styling
 
 const DrumPlayer = () => {
   const { user } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user && user.role === 'admin') {
+      router.push('/dashboard');
+    }
+  }, [user, router]);
+
   const [studentFirstName, setStudentFirstName] = useState('');
   const [studentLastName, setStudentLastName] = useState('');
   const [studentEmail, setStudentEmail] = useState('');
@@ -19,6 +28,11 @@ const DrumPlayer = () => {
     e.preventDefault();
     setStudentError('');
     setStudentSuccess('');
+
+    if (!user) {
+      setStudentError('User is not authenticated.');
+      return;
+    }
 
     try {
       const response = await fetch('/api/students', {
