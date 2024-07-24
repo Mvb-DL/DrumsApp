@@ -1,0 +1,166 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+model Teacher {
+  id        Int       @id @default(autoincrement())
+  firstName String
+  lastName  String
+  email     String    @unique
+  password  String
+  role      String    @default("teacher")
+  students  Student[]
+}
+
+model Student {
+  id           Int           @id @default(autoincrement())
+  firstName    String
+  lastName     String
+  email        String        @unique
+  password     String
+  role         String        @default("student")
+  trackId      String
+  trackHistory TrackHistory[]
+  parts        Part[]
+  teacherId    Int
+  teacher      Teacher       @relation(fields: [teacherId], references: [id])
+}
+
+model Part {
+  id             Int       @id @default(autoincrement())
+  name           String
+  previousPartId Int?
+  currentPartId  Int?
+  nextPartId     Int?
+  studentId      Int
+  student        Student   @relation(fields: [studentId], references: [id])
+  previousPart   Part?     @relation("PartToPrevious", fields: [previousPartId], references: [id])
+  nextPart       Part?     @relation("PartToNext", fields: [nextPartId], references: [id])
+  lessons        Lesson[]
+  partToPrevious Part[]    @relation("PartToNext")
+  partToNext     Part[]    @relation("PartToPrevious")
+}
+
+model Lesson {
+  id              Int      @id @default(autoincrement())
+  name            String
+  previousLessonId Int?
+  currentLessonId  Int?
+  nextLessonId     Int?
+  partId          Int
+  part            Part     @relation(fields: [partId], references: [id])
+  previousLesson  Lesson?  @relation("LessonToPrevious", fields: [previousLessonId], references: [id])
+  nextLesson      Lesson?  @relation("LessonToNext", fields: [nextLessonId], references: [id])
+  solos           Solo[]
+  lessonToPrevious Lesson[] @relation("LessonToNext")
+  lessonToNext     Lesson[] @relation("LessonToPrevious")
+}
+
+model Solo {
+  id             Int      @id @default(autoincrement())
+  name           String
+  previousSoloId Int?
+  currentSoloId  Int?
+  nextSoloId     Int?
+  level          Int
+  lessonId       Int
+  lesson         Lesson   @relation(fields: [lessonId], references: [id])
+  previousSolo   Solo?    @relation("SoloToPrevious", fields: [previousSoloId], references: [id])
+  nextSolo       Solo?    @relation("SoloToNext", fields: [nextSoloId], references: [id])
+  mixes          Mix[]
+  soloToPrevious Solo[]    @relation("SoloToNext")
+  soloToNext     Solo[]    @relation("SoloToPrevious")
+}
+
+model Mix {
+  id            Int      @id @default(autoincrement())
+  name          String
+  previousMixId Int?
+  currentMixId  Int?
+  nextMixId     Int?
+  level         Int
+  soloId        Int
+  solo          Solo     @relation(fields: [soloId], references: [id])
+  previousMix   Mix?     @relation("MixToPrevious", fields: [previousMixId], references: [id])
+  nextMix       Mix?     @relation("MixToNext", fields: [nextMixId], references: [id])
+  tracks        Track[]
+  mixToPrevious Mix[]     @relation("MixToNext")
+  mixToNext     Mix[]     @relation("MixToPrevious")
+}
+
+model Track {
+  id             Int       @id @default(autoincrement())
+  name           String
+  previousTrackId Int?
+  currentTrack   String    // URL to MP3 or MP4
+  nextTrackId    Int?
+  trackLevelId   Int
+  trackLevel     TrackLevel @relation(fields: [trackLevelId], references: [id])
+  mixId          Int
+  mix            Mix       @relation(fields: [mixId], references: [id])
+  previousTrack  Track?    @relation("TrackToPrevious", fields: [previousTrackId], references: [id])
+  nextTrack      Track?    @relation("TrackToNext", fields: [nextTrackId], references: [id])
+  trackToPrevious Track[]   @relation("TrackToNext")
+  trackToNext     Track[]   @relation("TrackToPrevious")
+}
+
+model TrackLevel {
+  id         Int       @id @default(autoincrement())
+  level      String
+  createdAt  DateTime  @default(now())
+  bpm        Int
+  instruments String   // Store as a JSON string to simulate list
+  tracks     Track[]
+}
+
+model TrackHistory {
+  id        Int      @id @default(autoincrement())
+  date      DateTime
+  trackId   String
+  studentId Int
+  student   Student  @relation(fields: [studentId], references: [id])
+}
+
+model Customer {
+  id          Int       @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  email       String    @unique
+  password    String
+  role        String    @default("customer")
+  address     Address?
+  phoneNumber String
+}
+
+model Address {
+  id          Int      @id @default(autoincrement())
+  country     String
+  postalCode  String
+  city        String
+  street      String
+  houseNumber String
+  customer    Customer @relation(fields: [customerId], references: [id])
+  customerId  Int      @unique
+}
+
+model Admin {
+  id        Int    @id @default(autoincrement())
+  firstName String
+  lastName  String
+  username  String
+  password  String
+  email     String @unique
+  role      String @default("admin")
+}
