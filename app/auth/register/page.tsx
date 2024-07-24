@@ -1,9 +1,11 @@
 // app/auth/register/page.js
 import Link from 'next/link';
 import styles from './register.module.scss';
+import Layout from '../../components/Layout';
 
 export default function Register() {
   return (
+    <Layout>
     <div className={styles.container}>
       <h1>Register Page</h1>
       <form className={styles.form}>
@@ -24,5 +26,6 @@ export default function Register() {
         </Link>
       </div>
     </div>
+    </Layout>
   );
 }

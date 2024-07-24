@@ -1,0 +1,15 @@
+/* app/components/Navbar.module.scss */
+.navbar {
+  background-color: #333;
+  padding: 1rem;
+  display: flex;
+  justify-content: flex-end; /* Position links to the right */
+  a {
+    color: #fff;
+    text-decoration: none;
+    margin-left: 1rem; /* Add space between links */
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

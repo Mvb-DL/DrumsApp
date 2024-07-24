@@ -1,9 +1,11 @@
 // app/auth/login/page.js
 import Link from 'next/link';
 import styles from './login.module.scss';
+import Layout from '../../components/Layout';
 
 export default function Login() {
   return (
+    <Layout>
     <div className={styles.container}>
       <h1>Login Page</h1>
       <form className={styles.form}>
@@ -22,5 +24,6 @@ export default function Login() {
         </Link>
       </div>
     </div>
+    </Layout>  
   );
 }
