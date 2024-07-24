@@ -17,12 +17,15 @@ export async function POST(request: NextRequest) {
   try {
     const userTeacher = await prisma.teacher.findUnique({ where: { email } });
     const userCustomer = await prisma.customer.findUnique({ where: { email } });
+    const userStudent = await prisma.student.findUnique({ where: { email } });
 
     let user = null;
     if (userTeacher && bcrypt.compareSync(password, userTeacher.password)) {
       user = { ...userTeacher, role: 'teacher' };
     } else if (userCustomer && bcrypt.compareSync(password, userCustomer.password)) {
       user = { ...userCustomer, role: 'customer' };
+    } else if (userStudent && bcrypt.compareSync(password, userStudent.password)) {
+      user = { ...userStudent, role: 'student' };
     }
 
     if (user) {
