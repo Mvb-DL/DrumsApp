@@ -11,15 +11,23 @@ const Navbar = () => {
 
   return (
     <nav className={styles.navbar}>
-      {pathname !== '/' && (
-        <Link href="/">Home</Link>
-      )}
-      {pathname !== '/auth/login' && (
-        <Link href="/auth/login">Login</Link>
-      )}
-      {pathname !== '/auth/register' && (
-        <Link href="/auth/register">Register</Link>
-      )}
+      <ul className={styles.navList}>
+        {pathname !== '/' && (
+          <li className={styles.navItem}>
+            <Link href="/">Home</Link>
+          </li>
+        )}
+        {pathname !== '/auth/login' && (
+          <li className={styles.navItem}>
+            <Link href="/auth/login">Login</Link>
+          </li>
+        )}
+        {pathname !== '/auth/register' && (
+          <li className={styles.navItem}>
+            <Link href="/auth/register">Register</Link>
+          </li>
+        )}
+      </ul>
     </nav>
   );
 };

@@ -8,7 +8,7 @@ import styles from './component_styles/Footer.module.scss'; // Assuming you are 
 const Footer = () => {
   return (
     <footer className={styles.footer}>
-      <Link href="/organization/impressum">Impressum</Link>
+      <Link href="/impressum">Impressum</Link>
     </footer>
   );
 };

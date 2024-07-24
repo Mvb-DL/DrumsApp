@@ -6,7 +6,6 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
@@ -22,7 +21,7 @@
 }
 
 body {
-  @apply font-roboto;
+  @apply font-roboto ;
 }
 
 @layer utilities {
@@ -31,10 +30,10 @@ body {
   }
 }
 
-
+/* Navbar styles */
 .navbar {
-  @apply bg-gray-800 p-4;
-
+  @apply bg-gray-800 p-4 flex justify-between items-center;
+  
   .nav-list {
     @apply flex list-none m-0 p-0;
 
@@ -46,4 +45,40 @@ body {
       }
     }
   }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .navbar {
+    @apply flex-col items-start;
+
+    .nav-list {
+      @apply flex-col w-full;
+
+      .nav-item {
+        @apply mb-2;
+
+        &:last-child {
+          @apply mb-0;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    @apply p-2;
+
+    .nav-list {
+      .nav-item {
+        @apply mr-2;
+      }
+    }
+  }
+}
+
+/* Footer styles */
+.footer {
+  @apply bg-gray-800 text-white p-4 text-center fixed bottom-0 w-full;
 }

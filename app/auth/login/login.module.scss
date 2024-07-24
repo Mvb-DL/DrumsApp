@@ -1,20 +1,23 @@
 /* app/auth/login/login.module.scss */
 .container {
-  @apply flex flex-col items-center mt-12;
+  @apply flex flex-col items-center justify-center min-h-screen py-2;
 }
 
 .form {
-  @apply flex flex-col items-center mt-5;
-}
+  @apply flex flex-col items-center justify-center;
 
-.input {
-  @apply p-3 mb-3 text-lg border rounded;
-}
+  .input {
+    @apply p-2 m-2 border border-gray-300 rounded;
+  }
 
-.button {
-  @apply p-3 mt-5 text-lg bg-blue-500 text-white rounded;
+  .button {
+    @apply p-2 m-2 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-700;
+  }
 }
 
 .backLink {
-  @apply mt-5 text-lg text-blue-500 underline cursor-pointer;
+  @apply mt-4;
+  a {
+    @apply text-blue-500 hover:underline;
+  }
 }
