@@ -1,0 +1,12 @@
+/* app/home.module.scss */
+.container {
+  @apply flex flex-col items-center mt-12;
+}
+
+.buttonContainer {
+  @apply mt-5;
+}
+
+.button {
+  @apply mr-2 p-3 text-lg bg-gray-500 text-white rounded;
+}
