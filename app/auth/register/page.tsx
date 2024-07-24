@@ -1,4 +1,3 @@
-// app/auth/register/page.tsx
 "use client";
 
 import React, { useState } from 'react';
@@ -6,11 +5,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styles from './register.module.scss';
 import Layout from '../../components/Layout';
+import { useAuth } from '../../context/AuthContext'; // Passen Sie den Pfad bei Bedarf an
 
 export default function Register() {
   const [role, setRole] = useState('customer');
   const [error, setError] = useState('');
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -38,7 +39,15 @@ export default function Register() {
       });
 
       if (response.ok) {
-        await response.json();
+        const result = await response.json();
+        // Set the user in AuthContext
+        login({
+          id: result.id,
+          surname: data.lastName,
+          name: data.firstName,
+          email: data.email,
+          role: data.role
+        });
         router.push('/drumplayer');
       } else {
         const result = await response.json();

@@ -5,11 +5,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styles from './login.module.scss';
 import Layout from '../../components/Layout';
+import { useAuth } from '../../context/AuthContext'; // Adjust the path if necessary
 
 export default function Login() {
   const [role, setRole] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -33,6 +35,8 @@ export default function Login() {
         const result = await response.json();
         console.log('Login successful:', result); // Debug log
         setRole(result.role);
+        // Set the user in AuthContext
+        login({ id: result.id, surname: result.lastName, name: result.firstName, email: result.email, role: result.role });
         router.push('/drumplayer');
       } else {
         const result = await response.json();

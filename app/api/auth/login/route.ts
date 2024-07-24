@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import jwt from 'jsonwebtoken';
+import { serialize } from 'cookie';
+import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 const secret = process.env.JWT_SECRET as string;
@@ -16,30 +18,39 @@ export async function POST(request: NextRequest) {
     const userTeacher = await prisma.teacher.findUnique({ where: { email } });
     const userCustomer = await prisma.customer.findUnique({ where: { email } });
 
-    if (userTeacher && userTeacher.password === password) {
-      const token = jwt.sign({ id: userTeacher.id, role: userTeacher.role, email: userTeacher.email }, secret, {
+    let user = null;
+    if (userTeacher && bcrypt.compareSync(password, userTeacher.password)) {
+      user = { ...userTeacher, role: 'teacher' };
+    } else if (userCustomer && bcrypt.compareSync(password, userCustomer.password)) {
+      user = { ...userCustomer, role: 'customer' };
+    }
+
+    if (user) {
+      const token = jwt.sign({ id: user.id, role: user.role, email: user.email }, secret, {
         expiresIn: '1h',
       });
-      console.log('Teacher login successful, token:', token); // Debug log
-      return NextResponse.json({ role: 'Teacher', token }, {
+
+      const cookie = serialize('token', token, {
+        httpOnly: true,
+        path: '/',
+        maxAge: 60 * 60, // 1 hour
+        sameSite: 'strict',
+      });
+
+      return NextResponse.json({ 
+        id: user.id, 
+        role: user.role, 
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        token 
+      }, {
         status: 200,
         headers: {
-          'Set-Cookie': `token=${token}; HttpOnly; Path=/; SameSite=Strict`,
-        },
-      });
-    } else if (userCustomer && userCustomer.password === password) {
-      const token = jwt.sign({ id: userCustomer.id, role: userCustomer.role, email: userCustomer.email }, secret, {
-        expiresIn: '1h',
-      });
-      console.log('Customer login successful, token:', token); // Debug log
-      return NextResponse.json({ role: 'Customer', token }, {
-        status: 200,
-        headers: {
-          'Set-Cookie': `token=${token}; HttpOnly; Path=/; SameSite=Strict`,
+          'Set-Cookie': cookie,
         },
       });
     } else {
-      console.log('Invalid email or password'); // Debug log
       return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
     }
   } catch (error) {
