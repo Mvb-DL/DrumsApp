@@ -1,4 +1,3 @@
-// app/auth/login/page.tsx
 "use client";
 
 import React, { useState } from 'react';
@@ -14,7 +13,7 @@ export default function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(''); // Fehler zurücksetzen
+    setError(''); // Reset error
     const formData = new FormData(e.target);
     const data = {
       email: formData.get('email') as string,
@@ -32,10 +31,12 @@ export default function Login() {
 
       if (response.ok) {
         const result = await response.json();
+        console.log('Login successful:', result); // Debug log
         setRole(result.role);
         router.push('/drumplayer');
       } else {
         const result = await response.json();
+        console.log('Login failed:', result); // Debug log
         setError(result.error || 'Invalid email or password');
       }
     } catch (error) {
@@ -59,7 +60,7 @@ export default function Login() {
           <Link href="/">Back to Home</Link>
         </div>
         <div className={styles.backLink}>
-          <Link href="/drumplayer">Go to Drum Player</Link>
+          <Link href="/auth/register">Register</Link>
         </div>
       </div>
     </Layout>

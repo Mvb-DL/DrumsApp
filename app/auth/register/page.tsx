@@ -14,7 +14,7 @@ export default function Register() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    setError(''); // Fehler zurücksetzen
+    setError(''); // Reset error
     const formData = new FormData(e.target);
     const data = {
       firstName: formData.get('firstName') as string,
@@ -38,6 +38,7 @@ export default function Register() {
       });
 
       if (response.ok) {
+        await response.json();
         router.push('/drumplayer');
       } else {
         const result = await response.json();
@@ -84,7 +85,7 @@ export default function Register() {
           <Link href="/">Back to Home</Link>
         </div>
         <div className={styles.backLink}>
-          <Link href="/drumplayer">Go to Drum Player</Link>
+          <Link href="/auth/login">Login</Link>
         </div>
       </div>
     </Layout>

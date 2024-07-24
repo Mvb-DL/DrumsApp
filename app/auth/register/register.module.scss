@@ -15,6 +15,10 @@
   }
 }
 
+.error {
+  @apply text-red-500 mt-2;
+}
+
 .backLink {
   @apply mt-4;
   a {

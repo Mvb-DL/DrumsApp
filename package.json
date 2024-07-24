@@ -12,6 +12,7 @@
     "@prisma/client": "^5.17.0",
     "autoprefixer": "^10.4.19",
     "cookie": "^0.6.0",
+    "jose": "^5.6.3",
     "jsonwebtoken": "^9.0.2",
     "next": "14.2.5",
     "react": "^18",
@@ -19,6 +20,7 @@
     "sass": "^1.77.8"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
