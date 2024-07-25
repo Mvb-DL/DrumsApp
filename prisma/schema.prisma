@@ -36,7 +36,7 @@ model Student {
   parts        StudentPart[]
   partRefs     Part[]        @relation("StudentParts")
   teacherId    Int
-  teacher      Teacher       @relation(fields: [teacherId], references: [id])
+  teacher      Teacher       @relation(fields: [teacherId], references: [id], onDelete: Cascade)
 }
 
 model Part {

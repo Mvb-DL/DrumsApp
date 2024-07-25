@@ -1,31 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
 export async function PUT(req: NextRequest) {
-  const { id, role, firstName, lastName } = await req.json();
+  const { id, role, firstName, lastName, password } = await req.json();
 
   try {
     let updatedUser;
+    const data: any = { firstName, lastName };
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      data.password = hashedPassword; // Hash the password before saving
+    }
 
     switch (role) {
       case 'teacher':
         updatedUser = await prisma.teacher.update({
           where: { id: id },
-          data: { firstName, lastName },
+          data,
         });
         break;
       case 'student':
         updatedUser = await prisma.student.update({
           where: { id: id },
-          data: { firstName, lastName },
+          data,
         });
         break;
       case 'customer':
         updatedUser = await prisma.customer.update({
           where: { id: id },
-          data: { firstName, lastName },
+          data,
         });
         break;
       default:
