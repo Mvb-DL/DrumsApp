@@ -46,11 +46,11 @@ model Part {
   currentPartId  Int?
   nextPartId     Int?
   studentParts   StudentPart[]
-  student        Student?  @relation("StudentParts", fields: [studentId], references: [id])
+  student        Student?  @relation("StudentParts", fields: [studentId], references: [id], onDelete: Cascade)
   studentId      Int?
   previousPart   Part?     @relation("PartToPrevious", fields: [previousPartId], references: [id])
   nextPart       Part?     @relation("PartToNext", fields: [nextPartId], references: [id])
-  lessons        Lesson[]
+  lessons        Lesson[]  // Cascading delete is set on the opposite field in Lesson
   partToPrevious Part[]    @relation("PartToNext")
   partToNext     Part[]    @relation("PartToPrevious")
 }
@@ -60,12 +60,10 @@ model StudentPart {
   studentId  Int?
   partId     Int
   student    Student? @relation(fields: [studentId], references: [id])
-  part       Part     @relation(fields: [partId], references: [id])
+  part       Part     @relation(fields: [partId], references: [id], onDelete: Cascade)
 
   @@unique([studentId, partId])
 }
-
-
 
 model Lesson {
   id              Int      @id @default(autoincrement())
@@ -74,10 +72,10 @@ model Lesson {
   currentLessonId  Int?
   nextLessonId     Int?
   partId          Int
-  part            Part     @relation(fields: [partId], references: [id])
+  part            Part     @relation(fields: [partId], references: [id], onDelete: Cascade)
   previousLesson  Lesson?  @relation("LessonToPrevious", fields: [previousLessonId], references: [id])
   nextLesson      Lesson?  @relation("LessonToNext", fields: [nextLessonId], references: [id])
-  solos           Solo[]
+  solos           Solo[]   // Cascading delete is set on the opposite field in Solo
   lessonToPrevious Lesson[] @relation("LessonToNext")
   lessonToNext     Lesson[] @relation("LessonToPrevious")
 }
@@ -90,12 +88,12 @@ model Solo {
   nextSoloId     Int?
   level          Int
   lessonId       Int
-  lesson         Lesson   @relation(fields: [lessonId], references: [id])
+  lesson         Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   previousSolo   Solo?    @relation("SoloToPrevious", fields: [previousSoloId], references: [id])
   nextSolo       Solo?    @relation("SoloToNext", fields: [nextSoloId], references: [id])
-  mixes          Mix[]
-  soloToPrevious Solo[]    @relation("SoloToNext")
-  soloToNext     Solo[]    @relation("SoloToPrevious")
+  mixes          Mix[]    // Cascading delete is set on the opposite field in Mix
+  soloToPrevious Solo[]   @relation("SoloToNext")
+  soloToNext     Solo[]   @relation("SoloToPrevious")
 }
 
 model Mix {
@@ -106,12 +104,12 @@ model Mix {
   nextMixId     Int?
   level         Int
   soloId        Int
-  solo          Solo     @relation(fields: [soloId], references: [id])
+  solo          Solo     @relation(fields: [soloId], references: [id], onDelete: Cascade)
   previousMix   Mix?     @relation("MixToPrevious", fields: [previousMixId], references: [id])
   nextMix       Mix?     @relation("MixToNext", fields: [nextMixId], references: [id])
-  tracks        Track[]
-  mixToPrevious Mix[]     @relation("MixToNext")
-  mixToNext     Mix[]     @relation("MixToPrevious")
+  tracks        Track[]  // Cascading delete is set on the opposite field in Track
+  mixToPrevious Mix[]    @relation("MixToNext")
+  mixToNext     Mix[]    @relation("MixToPrevious")
 }
 
 model Track {
@@ -121,9 +119,9 @@ model Track {
   currentTrack   String    // URL to MP3 or MP4
   nextTrackId    Int?
   trackLevelId   Int
-  trackLevel     TrackLevel @relation(fields: [trackLevelId], references: [id])
+  trackLevel     TrackLevel @relation(fields: [trackLevelId], references: [id], name: "TrackLevelRelation")
   mixId          Int
-  mix            Mix       @relation(fields: [mixId], references: [id])
+  mix            Mix       @relation(fields: [mixId], references: [id], onDelete: Cascade)
   previousTrack  Track?    @relation("TrackToPrevious", fields: [previousTrackId], references: [id])
   nextTrack      Track?    @relation("TrackToNext", fields: [nextTrackId], references: [id])
   trackToPrevious Track[]   @relation("TrackToNext")
@@ -136,8 +134,10 @@ model TrackLevel {
   createdAt  DateTime  @default(now())
   bpm        Int
   instruments String   // Store as a JSON string to simulate list
-  tracks     Track[]
+  tracks     Track[]   @relation(name: "TrackLevelRelation")
 }
+
+
 
 model TrackHistory {
   id        Int      @id @default(autoincrement())
@@ -146,6 +146,7 @@ model TrackHistory {
   studentId Int
   student   Student  @relation(fields: [studentId], references: [id])
 }
+
 
 model Customer {
   id          Int       @id @default(autoincrement())

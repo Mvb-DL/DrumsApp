@@ -8,22 +8,12 @@ import styles from './dashboard.module.scss'; // Adjust the path if necessary
 const Dashboard = () => {
   const { user } = useAuth();
   const [name, setName] = useState('');
-  const [previousPartId, setPreviousPartId] = useState<number | null>(null);
-  const [nextPartId, setNextPartId] = useState<number | null>(null);
   const [lessonName, setLessonName] = useState('');
-  const [previousLessonId, setPreviousLessonId] = useState<number | null>(null);
-  const [nextLessonId, setNextLessonId] = useState<number | null>(null);
   const [soloName, setSoloName] = useState('');
-  const [previousSoloId, setPreviousSoloId] = useState<number | null>(null);
-  const [nextSoloId, setNextSoloId] = useState<number | null>(null);
-  const [soloLevel, setSoloLevel] = useState<number>(0); // Hinzufügen des Level-Felds für Solo
+  const [soloLevel, setSoloLevel] = useState<number>(0);
   const [mixName, setMixName] = useState('');
-  const [previousMixId, setPreviousMixId] = useState<number | null>(null);
-  const [nextMixId, setNextMixId] = useState<number | null>(null);
-  const [mixLevel, setMixLevel] = useState<number>(0); // Hinzufügen des Level-Felds für Mix
+  const [mixLevel, setMixLevel] = useState<number>(0);
   const [trackName, setTrackName] = useState('');
-  const [previousTrackId, setPreviousTrackId] = useState<number | null>(null);
-  const [nextTrackId, setNextTrackId] = useState<number | null>(null);
   const [currentTrack, setCurrentTrack] = useState('');
   const [trackLevelName, setTrackLevelName] = useState('');
   const [bpm, setBpm] = useState(0);
@@ -35,22 +25,12 @@ const Dashboard = () => {
 
     const partData = {
       name,
-      previousPartId: previousPartId || undefined,
-      nextPartId: nextPartId || undefined,
       lessonName,
-      previousLessonId: previousLessonId || undefined,
-      nextLessonId: nextLessonId || undefined,
       soloName,
-      previousSoloId: previousSoloId || undefined,
-      nextSoloId: nextSoloId || undefined,
-      soloLevel, // Hinzufügen des Level-Felds für Solo
+      soloLevel,
       mixName,
-      previousMixId: previousMixId || undefined,
-      nextMixId: nextMixId || undefined,
-      mixLevel, // Hinzufügen des Level-Felds für Mix
+      mixLevel,
       trackName,
-      previousTrackId: previousTrackId || undefined,
-      nextTrackId: nextTrackId || undefined,
       currentTrack,
       trackLevelName,
       bpm,
@@ -69,22 +49,12 @@ const Dashboard = () => {
       const result = await response.json();
       setMessage(`Part and related entities created successfully.`);
       setName('');
-      setPreviousPartId(null);
-      setNextPartId(null);
       setLessonName('');
-      setPreviousLessonId(null);
-      setNextLessonId(null);
       setSoloName('');
-      setPreviousSoloId(null);
-      setNextSoloId(null);
-      setSoloLevel(0); // Zurücksetzen des Level-Felds für Solo
+      setSoloLevel(0);
       setMixName('');
-      setPreviousMixId(null);
-      setNextMixId(null);
-      setMixLevel(0); // Zurücksetzen des Level-Felds für Mix
+      setMixLevel(0);
       setTrackName('');
-      setPreviousTrackId(null);
-      setNextTrackId(null);
       setCurrentTrack('');
       setTrackLevelName('');
       setBpm(0);
@@ -117,24 +87,6 @@ const Dashboard = () => {
                   />
                 </div>
                 <div className={styles.formGroup}>
-                  <label htmlFor="previousPartId">Previous Part ID:</label>
-                  <input
-                    type="number"
-                    id="previousPartId"
-                    value={previousPartId ?? ''}
-                    onChange={(e) => setPreviousPartId(e.target.value ? parseInt(e.target.value) : null)}
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label htmlFor="nextPartId">Next Part ID:</label>
-                  <input
-                    type="number"
-                    id="nextPartId"
-                    value={nextPartId ?? ''}
-                    onChange={(e) => setNextPartId(e.target.value ? parseInt(e.target.value) : null)}
-                  />
-                </div>
-                <div className={styles.formGroup}>
                   <label htmlFor="lessonName">Lesson Name:</label>
                   <input
                     type="text"
@@ -145,24 +97,6 @@ const Dashboard = () => {
                   />
                 </div>
                 <div className={styles.formGroup}>
-                  <label htmlFor="previousLessonId">Previous Lesson ID:</label>
-                  <input
-                    type="number"
-                    id="previousLessonId"
-                    value={previousLessonId ?? ''}
-                    onChange={(e) => setPreviousLessonId(e.target.value ? parseInt(e.target.value) : null)}
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label htmlFor="nextLessonId">Next Lesson ID:</label>
-                  <input
-                    type="number"
-                    id="nextLessonId"
-                    value={nextLessonId ?? ''}
-                    onChange={(e) => setNextLessonId(e.target.value ? parseInt(e.target.value) : null)}
-                  />
-                </div>
-                <div className={styles.formGroup}>
                   <label htmlFor="soloName">Solo Name:</label>
                   <input
                     type="text"
@@ -170,24 +104,6 @@ const Dashboard = () => {
                     value={soloName}
                     onChange={(e) => setSoloName(e.target.value)}
                     required
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label htmlFor="previousSoloId">Previous Solo ID:</label>
-                  <input
-                    type="number"
-                    id="previousSoloId"
-                    value={previousSoloId ?? ''}
-                    onChange={(e) => setPreviousSoloId(e.target.value ? parseInt(e.target.value) : null)}
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label htmlFor="nextSoloId">Next Solo ID:</label>
-                  <input
-                    type="number"
-                    id="nextSoloId"
-                    value={nextSoloId ?? ''}
-                    onChange={(e) => setNextSoloId(e.target.value ? parseInt(e.target.value) : null)}
                   />
                 </div>
                 <div className={styles.formGroup}>
@@ -211,24 +127,6 @@ const Dashboard = () => {
                   />
                 </div>
                 <div className={styles.formGroup}>
-                  <label htmlFor="previousMixId">Previous Mix ID:</label>
-                  <input
-                    type="number"
-                    id="previousMixId"
-                    value={previousMixId ?? ''}
-                    onChange={(e) => setPreviousMixId(e.target.value ? parseInt(e.target.value) : null)}
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label htmlFor="nextMixId">Next Mix ID:</label>
-                  <input
-                    type="number"
-                    id="nextMixId"
-                    value={nextMixId ?? ''}
-                    onChange={(e) => setNextMixId(e.target.value ? parseInt(e.target.value) : null)}
-                  />
-                </div>
-                <div className={styles.formGroup}>
                   <label htmlFor="mixLevel">Mix Level:</label>
                   <input
                     type="number"
@@ -246,24 +144,6 @@ const Dashboard = () => {
                     value={trackName}
                     onChange={(e) => setTrackName(e.target.value)}
                     required
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label htmlFor="previousTrackId">Previous Track ID:</label>
-                  <input
-                    type="number"
-                    id="previousTrackId"
-                    value={previousTrackId ?? ''}
-                    onChange={(e) => setPreviousTrackId(e.target.value ? parseInt(e.target.value) : null)}
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label htmlFor="nextTrackId">Next Track ID:</label>
-                  <input
-                    type="number"
-                    id="nextTrackId"
-                    value={nextTrackId ?? ''}
-                    onChange={(e) => setNextTrackId(e.target.value ? parseInt(e.target.value) : null)}
                   />
                 </div>
                 <div className={styles.formGroup}>
