@@ -14,11 +14,11 @@ export async function POST(request: NextRequest) {
     soloName,
     previousSoloId,
     nextSoloId,
-    soloLevel, // Hinzufügen des Level-Felds für Solo
+    soloLevel, 
     mixName,
     previousMixId,
     nextMixId,
-    mixLevel, // Hinzufügen des Level-Felds für Mix
+    mixLevel, 
     trackName,
     previousTrackId,
     nextTrackId,
@@ -29,7 +29,6 @@ export async function POST(request: NextRequest) {
   } = await request.json();
 
   try {
-    // Validating if the provided IDs are valid
     const previousPart = previousPartId ? await prisma.part.findUnique({ where: { id: previousPartId } }) : null;
     const nextPart = nextPartId ? await prisma.part.findUnique({ where: { id: nextPartId } }) : null;
     const previousLesson = previousLessonId ? await prisma.lesson.findUnique({ where: { id: previousLessonId } }) : null;
@@ -64,7 +63,7 @@ export async function POST(request: NextRequest) {
         lessonId: lesson.id,
         previousSoloId: previousSolo ? previousSoloId : null,
         nextSoloId: nextSolo ? nextSoloId : null,
-        level: soloLevel, // Hinzufügen des Level-Felds für Solo
+        level: soloLevel, 
       },
     });
 
@@ -74,7 +73,7 @@ export async function POST(request: NextRequest) {
         soloId: solo.id,
         previousMixId: previousMix ? previousMixId : null,
         nextMixId: nextMix ? nextMixId : null,
-        level: mixLevel, // Hinzufügen des Level-Felds für Mix
+        level: mixLevel, 
       },
     });
 

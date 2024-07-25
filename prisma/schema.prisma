@@ -50,7 +50,7 @@ model Part {
   studentId      Int?
   previousPart   Part?     @relation("PartToPrevious", fields: [previousPartId], references: [id])
   nextPart       Part?     @relation("PartToNext", fields: [nextPartId], references: [id])
-  lessons        Lesson[]  // Cascading delete is set on the opposite field in Lesson
+  lessons        Lesson[]  
   partToPrevious Part[]    @relation("PartToNext")
   partToNext     Part[]    @relation("PartToPrevious")
 }

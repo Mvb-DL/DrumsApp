@@ -3,11 +3,13 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext'; 
 import Layout from '../components/Layout';
+import { useRouter } from 'next/navigation';
 
 const AccountPage = () => {
-  const { user, login } = useAuth();
-  const [firstName, setFirstName] = useState(user?.firstName || '');
-  const [lastName, setLastName] = useState(user?.lastName || '');
+  const { user, login, logout } = useAuth();
+  const router = useRouter();
+  const [firstName, setFirstName] = useState(user?.name || '');
+  const [lastName, setLastName] = useState(user?.surname || '');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
 
@@ -32,11 +34,25 @@ const AccountPage = () => {
 
     if (response.ok) {
       const result = await response.json();
-      login(result); // Update the user context with the new data
+      login(result); 
       setMessage('Account updated successfully');
-      setPassword(''); // Clear the password field
+      setPassword(''); 
     } else {
       setMessage('Failed to update account');
+    }
+  };
+
+  const handleDelete = async () => {
+    const response = await fetch(`/api/user?id=${user?.id}&role=${user?.role}`, {
+      method: 'DELETE',
+    });
+
+    if (response.ok) {
+      logout();
+      setMessage('Account deleted successfully');
+      router.push('/'); // Redirect to the main page
+    } else {
+      setMessage('Failed to delete account');
     }
   };
 
@@ -45,7 +61,7 @@ const AccountPage = () => {
       <div>
         {user ? (
           <div>
-            <h1>Welcome, {user.firstName} {user.lastName}</h1>
+            <h1>Welcome, {user.name} {user.surname}</h1>
             <p>Email: {user.email}</p>
             <form onSubmit={handleSubmit}>
               <div>
@@ -79,6 +95,7 @@ const AccountPage = () => {
               </div>
               <button type="submit">Update Account</button>
             </form>
+            <button onClick={handleDelete}>Delete Account</button>
             {message && <p>{message}</p>}
           </div>
         ) : (

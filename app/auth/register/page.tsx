@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styles from './register.module.scss';
 import Layout from '../../components/Layout';
-import { useAuth } from '../../context/AuthContext'; // Passen Sie den Pfad bei Bedarf an
+import { useAuth } from '../../context/AuthContext'; 
 
 export default function Register() {
   const [role, setRole] = useState('customer');
@@ -14,8 +14,9 @@ export default function Register() {
   const { login } = useAuth();
 
   const handleRegister = async (e) => {
+
     e.preventDefault();
-    setError(''); // Reset error
+    setError(''); 
     const formData = new FormData(e.target);
     const data = {
       firstName: formData.get('firstName') as string,
@@ -40,7 +41,7 @@ export default function Register() {
 
       if (response.ok) {
         const result = await response.json();
-        // Set the user in AuthContext
+
         login({
           id: result.id,
           surname: data.lastName,
