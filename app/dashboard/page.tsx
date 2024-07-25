@@ -39,11 +39,24 @@ const Dashboard = () => {
     fetchParts();
   }, []);
 
+  useEffect(() => {
+    if (selectedPartId) {
+      const selectedPart = parts.find((part) => part.id === selectedPartId);
+      if (selectedPart) {
+        setName(selectedPart.name);
+      }
+    } else {
+      setName('');
+    }
+  }, [selectedPartId, parts]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append('selectedPartId', selectedPartId?.toString() || '');
+    if (selectedPartId) {
+      formData.append('selectedPartId', selectedPartId.toString());
+    }
     formData.append('name', name);
     formData.append('lessonName', lessonName);
     formData.append('soloName', soloName);
