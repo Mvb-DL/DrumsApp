@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -9,6 +9,7 @@ import styles from './drumplayer.module.scss';
 interface Part {
   id: number;
   name: string;
+  imageUrl?: string; // Add this line
   lessons: Lesson[];
 }
 
@@ -83,6 +84,7 @@ const DrumPlayer = () => {
                 {parts.map(part => (
                   <li key={part.id}>
                     <h4>{part.name}</h4>
+                    {part.imageUrl && <img src={part.imageUrl} alt={part.name} className={styles.partImage} />} {/* Add this line */}
                     <div>
                       <h5>Lessons:</h5>
                       <ul>

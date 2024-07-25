@@ -50,9 +50,10 @@ model Part {
   studentId      Int?
   previousPart   Part?     @relation("PartToPrevious", fields: [previousPartId], references: [id])
   nextPart       Part?     @relation("PartToNext", fields: [nextPartId], references: [id])
-  lessons        Lesson[]  
+  lessons        Lesson[]
   partToPrevious Part[]    @relation("PartToNext")
   partToNext     Part[]    @relation("PartToPrevious")
+  imageUrl       String?   // Add this line
 }
 
 model StudentPart {

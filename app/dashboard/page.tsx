@@ -34,6 +34,7 @@ const Dashboard = () => {
   const [bpm, setBpm] = useState<number>(0);
   const [instruments, setInstruments] = useState('');
   const [message, setMessage] = useState('');
+  const [image, setImage] = useState<File | null>(null); // Add this line
 
   useEffect(() => {
     setPreviousPartId(currentPartId ? currentPartId - 1 : null);
@@ -63,41 +64,40 @@ const Dashboard = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const partData = {
-      name,
-      previousPartId: previousPartId || undefined,
-      currentPartId,
-      nextPartId: nextPartId || undefined,
-      lessonName,
-      previousLessonId: previousLessonId || undefined,
-      currentLessonId,
-      nextLessonId: nextLessonId || undefined,
-      soloName,
-      previousSoloId: previousSoloId || undefined,
-      currentSoloId,
-      nextSoloId: nextSoloId || undefined,
-      soloLevel,
-      mixName,
-      previousMixId: previousMixId || undefined,
-      currentMixId,
-      nextMixId: nextMixId || undefined,
-      mixLevel,
-      trackName,
-      previousTrackId: previousTrackId || undefined,
-      currentTrackId,
-      nextTrackId: nextTrackId || undefined,
-      currentTrack,
-      trackLevelName,
-      bpm,
-      instruments,
-    };
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('previousPartId', previousPartId?.toString() || '');
+    formData.append('currentPartId', currentPartId?.toString() || '');
+    formData.append('nextPartId', nextPartId?.toString() || '');
+    formData.append('lessonName', lessonName);
+    formData.append('previousLessonId', previousLessonId?.toString() || '');
+    formData.append('currentLessonId', currentLessonId?.toString() || '');
+    formData.append('nextLessonId', nextLessonId?.toString() || '');
+    formData.append('soloName', soloName);
+    formData.append('previousSoloId', previousSoloId?.toString() || '');
+    formData.append('currentSoloId', currentSoloId?.toString() || '');
+    formData.append('nextSoloId', nextSoloId?.toString() || '');
+    formData.append('soloLevel', soloLevel.toString());
+    formData.append('mixName', mixName);
+    formData.append('previousMixId', previousMixId?.toString() || '');
+    formData.append('currentMixId', currentMixId?.toString() || '');
+    formData.append('nextMixId', nextMixId?.toString() || '');
+    formData.append('mixLevel', mixLevel.toString());
+    formData.append('trackName', trackName);
+    formData.append('previousTrackId', previousTrackId?.toString() || '');
+    formData.append('currentTrackId', currentTrackId?.toString() || '');
+    formData.append('nextTrackId', nextTrackId?.toString() || '');
+    formData.append('currentTrack', currentTrack);
+    formData.append('trackLevelName', trackLevelName);
+    formData.append('bpm', bpm.toString());
+    formData.append('instruments', instruments);
+    if (image) {
+      formData.append('image', image);
+    }
 
     const response = await fetch('/api/parts', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(partData),
+      body: formData,
     });
 
     if (response.ok) {
@@ -119,6 +119,7 @@ const Dashboard = () => {
       setTrackLevelName('');
       setBpm(0);
       setInstruments('');
+      setImage(null); // Add this line
     } else {
       setMessage('Failed to create part and related entities');
     }
@@ -305,6 +306,15 @@ const Dashboard = () => {
                     id="instruments"
                     value={instruments}
                     onChange={(e) => setInstruments(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label htmlFor="image">Image:</label>
+                  <input
+                    type="file"
+                    id="image"
+                    onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
                     required
                   />
                 </div>
