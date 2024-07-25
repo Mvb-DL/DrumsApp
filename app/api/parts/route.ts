@@ -109,3 +109,30 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to create part and related entities' }, { status: 500 });
   }
 }
+
+export async function GET(request: NextRequest) {
+  try {
+    const parts = await prisma.part.findMany({
+      include: {
+        lessons: {
+          include: {
+            solos: {
+              include: {
+                mixes: {
+                  include: {
+                    tracks: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(parts);
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: 'Failed to fetch parts' }, { status: 500 });
+  }
+}

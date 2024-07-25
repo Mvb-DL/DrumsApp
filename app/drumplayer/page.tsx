@@ -1,14 +1,48 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../context/AuthContext'; // Adjust the path if necessary
-import Layout from '../components/Layout'; // Adjust the path if necessary
-import styles from './drumplayer.module.scss'; // Assuming you have SCSS for styling
+import { useAuth } from '../context/AuthContext'; 
+import Layout from '../components/Layout'; 
+import styles from './drumplayer.module.scss'; 
+
+interface Part {
+  id: number;
+  name: string;
+  lessons: Lesson[];
+}
+
+interface Lesson {
+  id: number;
+  name: string;
+  solos: Solo[];
+}
+
+interface Solo {
+  id: number;
+  name: string;
+  level: number;
+  mixes: Mix[];
+}
+
+interface Mix {
+  id: number;
+  name: string;
+  level: number;
+  tracks: Track[];
+}
+
+interface Track {
+  id: number;
+  name: string;
+  currentTrack: string;
+}
 
 const DrumPlayer = () => {
   const { user } = useAuth();
   const router = useRouter();
+  const [parts, setParts] = useState<Part[]>([]);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (user && user.role === 'admin') {
@@ -16,56 +50,22 @@ const DrumPlayer = () => {
     }
   }, [user, router]);
 
-  const [studentFirstName, setStudentFirstName] = useState('');
-  const [studentLastName, setStudentLastName] = useState('');
-  const [studentEmail, setStudentEmail] = useState('');
-  const [studentPassword, setStudentPassword] = useState('');
-  const [studentTrackId, setStudentTrackId] = useState('');
-  const [studentError, setStudentError] = useState('');
-  const [studentSuccess, setStudentSuccess] = useState('');
-
-  const handleAddStudent = async (e) => {
-    e.preventDefault();
-    setStudentError('');
-    setStudentSuccess('');
-
-    if (!user) {
-      setStudentError('User is not authenticated.');
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/students', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          firstName: studentFirstName,
-          lastName: studentLastName,
-          email: studentEmail,
-          password: studentPassword,
-          trackId: studentTrackId,
-          teacherId: user.id
-        }),
-      });
-
-      if (response.ok) {
-        setStudentSuccess('Student added successfully!');
-        setStudentFirstName('');
-        setStudentLastName('');
-        setStudentEmail('');
-        setStudentPassword('');
-        setStudentTrackId('');
-      } else {
-        const result = await response.json();
-        setStudentError(result.error || 'Failed to add student');
+  useEffect(() => {
+    const fetchParts = async () => {
+      try {
+        const response = await fetch('/api/parts');
+        if (!response.ok) {
+          throw new Error('Failed to fetch parts');
+        }
+        const data: Part[] = await response.json();
+        setParts(data);
+      } catch (error) {
+        setError(error.message);
       }
-    } catch (error) {
-      console.error('Failed to add student', error);
-      setStudentError('Failed to add student');
-    }
-  };
+    };
+
+    fetchParts();
+  }, []);
 
   return (
     <Layout>
@@ -76,6 +76,55 @@ const DrumPlayer = () => {
             <h2>Welcome, {user.name} {user.surname}</h2>
             <p>Email: {user.email}</p>
             <p>Role: {user.role}</p>
+            {error && <p className={styles.error}>{error}</p>}
+            <div>
+              <h3>Parts</h3>
+              <ul>
+                {parts.map(part => (
+                  <li key={part.id}>
+                    <h4>{part.name}</h4>
+                    <div>
+                      <h5>Lessons:</h5>
+                      <ul>
+                        {part.lessons.map(lesson => (
+                          <li key={lesson.id}>
+                            <h5>{lesson.name}</h5>
+                            <div>
+                              <h6>Solos:</h6>
+                              <ul>
+                                {lesson.solos.map(solo => (
+                                  <li key={solo.id}>
+                                    <h6>{solo.name} (Level: {solo.level})</h6>
+                                    <div>
+                                      <h6>Mixes:</h6>
+                                      <ul>
+                                        {solo.mixes.map(mix => (
+                                          <li key={mix.id}>
+                                            <h6>{mix.name} (Level: {mix.level})</h6>
+                                            <div>
+                                              <h6>Tracks:</h6>
+                                              <ul>
+                                                {mix.tracks.map(track => (
+                                                  <li key={track.id}>{track.name} (Current Track: {track.currentTrack})</li>
+                                                ))}
+                                              </ul>
+                                            </div>
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </div>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         ) : (
           <p>Please log in to view your details.</p>
