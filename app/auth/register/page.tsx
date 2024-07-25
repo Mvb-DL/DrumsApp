@@ -48,7 +48,13 @@ export default function Register() {
           email: data.email,
           role: data.role
         });
-        router.push('/drumplayer');
+
+       if (result.role === 'teacher') {
+         router.push('/drumplayer-teacher');
+       } else {
+         router.push('/drumplayer');
+       }
+
       } else {
         const result = await response.json();
         setError(result.error || 'Registration failed');

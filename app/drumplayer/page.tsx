@@ -76,56 +76,6 @@ const DrumPlayer = () => {
             <h2>Welcome, {user.name} {user.surname}</h2>
             <p>Email: {user.email}</p>
             <p>Role: {user.role}</p>
-            {user.role === 'teacher' && (
-              <div className={styles.addStudentBox}>
-                <h3>Add New Student</h3>
-                <form className={styles.form} onSubmit={handleAddStudent}>
-                  <input
-                    type="text"
-                    placeholder="Student First Name"
-                    value={studentFirstName}
-                    onChange={(e) => setStudentFirstName(e.target.value)}
-                    required
-                    className={styles.input}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Student Last Name"
-                    value={studentLastName}
-                    onChange={(e) => setStudentLastName(e.target.value)}
-                    required
-                    className={styles.input}
-                  />
-                  <input
-                    type="email"
-                    placeholder="Student Email"
-                    value={studentEmail}
-                    onChange={(e) => setStudentEmail(e.target.value)}
-                    required
-                    className={styles.input}
-                  />
-                  <input
-                    type="password"
-                    placeholder="Student Password"
-                    value={studentPassword}
-                    onChange={(e) => setStudentPassword(e.target.value)}
-                    required
-                    className={styles.input}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Track ID"
-                    value={studentTrackId}
-                    onChange={(e) => setStudentTrackId(e.target.value)}
-                    required
-                    className={styles.input}
-                  />
-                  <button type="submit" className={styles.button}>Add Student</button>
-                </form>
-                {studentError && <p className={styles.error}>{studentError}</p>}
-                {studentSuccess && <p className={styles.success}>{studentSuccess}</p>}
-              </div>
-            )}
           </div>
         ) : (
           <p>Please log in to view your details.</p>

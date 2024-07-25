@@ -41,6 +41,8 @@ export default function Login() {
         // Redirect based on role
         if (result.role === 'admin') {
           router.push('/dashboard');
+        } else if (result.role === 'teacher') {
+          router.push('/drumplayer-teacher');
         } else {
           router.push('/drumplayer');
         }

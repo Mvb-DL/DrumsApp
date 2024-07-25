@@ -33,7 +33,8 @@ model Student {
   role         String        @default("student")
   trackId      String
   trackHistory TrackHistory[]
-  parts        Part[]
+  parts        StudentPart[]
+  partRefs     Part[]        @relation("StudentParts")
   teacherId    Int
   teacher      Teacher       @relation(fields: [teacherId], references: [id])
 }
@@ -44,14 +45,27 @@ model Part {
   previousPartId Int?
   currentPartId  Int?
   nextPartId     Int?
-  studentId      Int
-  student        Student   @relation(fields: [studentId], references: [id])
+  studentParts   StudentPart[]
+  student        Student?  @relation("StudentParts", fields: [studentId], references: [id])
+  studentId      Int?
   previousPart   Part?     @relation("PartToPrevious", fields: [previousPartId], references: [id])
   nextPart       Part?     @relation("PartToNext", fields: [nextPartId], references: [id])
   lessons        Lesson[]
   partToPrevious Part[]    @relation("PartToNext")
   partToNext     Part[]    @relation("PartToPrevious")
 }
+
+model StudentPart {
+  id         Int      @id @default(autoincrement())
+  studentId  Int?
+  partId     Int
+  student    Student? @relation(fields: [studentId], references: [id])
+  part       Part     @relation(fields: [partId], references: [id])
+
+  @@unique([studentId, partId])
+}
+
+
 
 model Lesson {
   id              Int      @id @default(autoincrement())

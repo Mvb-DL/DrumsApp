@@ -11,6 +11,7 @@ interface User {
   role: string;
 }
 
+
 interface AuthContextType {
   user: User | null;
   login: (user: User) => void;
