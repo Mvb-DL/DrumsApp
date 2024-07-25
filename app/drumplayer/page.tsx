@@ -9,7 +9,7 @@ import styles from './drumplayer.module.scss';
 interface Part {
   id: number;
   name: string;
-  imageUrl?: string; // Add this line
+  imageUrl?: string;
   lessons: Lesson[];
 }
 
@@ -44,6 +44,10 @@ const DrumPlayer = () => {
   const router = useRouter();
   const [parts, setParts] = useState<Part[]>([]);
   const [error, setError] = useState('');
+  const [openPartId, setOpenPartId] = useState<number | null>(null);
+  const [openLessonId, setOpenLessonId] = useState<number | null>(null);
+  const [openSoloId, setOpenSoloId] = useState<number | null>(null);
+  const [openMixId, setOpenMixId] = useState<number | null>(null);
 
   useEffect(() => {
     if (user && user.role === 'admin') {
@@ -68,6 +72,35 @@ const DrumPlayer = () => {
     fetchParts();
   }, []);
 
+  const togglePart = (partId: number) => {
+    setOpenPartId(openPartId === partId ? null : partId);
+    setOpenLessonId(null);
+    setOpenSoloId(null);
+    setOpenMixId(null);
+  };
+
+  const toggleLesson = (lessonId: number) => {
+    setOpenLessonId(openLessonId === lessonId ? null : lessonId);
+    setOpenSoloId(null);
+    setOpenMixId(null);
+  };
+
+  const toggleSolo = (soloId: number) => {
+    setOpenSoloId(openSoloId === soloId ? null : soloId);
+    setOpenMixId(null);
+  };
+
+  const toggleMix = (mixId: number) => {
+    setOpenMixId(openMixId === mixId ? null : mixId);
+  };
+
+  const collapseAll = () => {
+    setOpenPartId(null);
+    setOpenLessonId(null);
+    setOpenSoloId(null);
+    setOpenMixId(null);
+  };
+
   return (
     <Layout>
       <div className={styles.container}>
@@ -78,54 +111,76 @@ const DrumPlayer = () => {
             <p>Email: {user.email}</p>
             <p>Role: {user.role}</p>
             {error && <p className={styles.error}>{error}</p>}
+            <button onClick={collapseAll} className={styles.collapseButton}>Einklappen</button> 
             <div>
               <h3>Parts</h3>
-              <ul>
+              <div className={styles.partsRow}>
                 {parts.map(part => (
-                  <li key={part.id}>
-                    <h4>{part.name}</h4>
-                    {part.imageUrl && <img src={part.imageUrl} alt={part.name} className={styles.partImage} />} {/* Add this line */}
-                    <div>
+                  <div key={part.id} className={styles.partItem} onClick={() => togglePart(part.id)}>
+                    {part.imageUrl && <img src={part.imageUrl} alt={part.name} className={styles.partImage} />}
+                    <span>{part.name}</span>
+                  </div>
+                ))}
+              </div>
+              {parts.map(part => (
+                <div key={part.id}>
+                  {openPartId === part.id && (
+                    <div className={styles.partDetails}>
+                      <h4>{part.name}</h4>
                       <h5>Lessons:</h5>
                       <ul>
                         {part.lessons.map(lesson => (
                           <li key={lesson.id}>
-                            <h5>{lesson.name}</h5>
-                            <div>
-                              <h6>Solos:</h6>
-                              <ul>
-                                {lesson.solos.map(solo => (
-                                  <li key={solo.id}>
-                                    <h6>{solo.name} (Level: {solo.level})</h6>
-                                    <div>
-                                      <h6>Mixes:</h6>
-                                      <ul>
-                                        {solo.mixes.map(mix => (
-                                          <li key={mix.id}>
-                                            <h6>{mix.name} (Level: {mix.level})</h6>
-                                            <div>
-                                              <h6>Tracks:</h6>
-                                              <ul>
-                                                {mix.tracks.map(track => (
-                                                  <li key={track.id}>{track.name} (Current Track: {track.currentTrack})</li>
-                                                ))}
-                                              </ul>
-                                            </div>
-                                          </li>
-                                        ))}
-                                      </ul>
-                                    </div>
-                                  </li>
-                                ))}
-                              </ul>
+                            <div className={styles.lessonHeader} onClick={() => toggleLesson(lesson.id)}>
+                              <span>{lesson.name}</span>
                             </div>
+                            {openLessonId === lesson.id && (
+                              <div className={styles.lessonDetails}>
+                                <h6>Solos:</h6>
+                                <ul>
+                                  {lesson.solos.map(solo => (
+                                    <li key={solo.id}>
+                                      <div className={styles.soloHeader} onClick={() => toggleSolo(solo.id)}>
+                                        <span>{solo.name} (Level: {solo.level})</span>
+                                      </div>
+                                      {openSoloId === solo.id && (
+                                        <div className={styles.soloDetails}>
+                                          <h6>Mixes:</h6>
+                                          <ul>
+                                            {solo.mixes.map(mix => (
+                                              <li key={mix.id}>
+                                                <div className={styles.mixHeader} onClick={() => toggleMix(mix.id)}>
+                                                  <span>{mix.name} (Level: {mix.level})</span>
+                                                </div>
+                                                {openMixId === mix.id && (
+                                                  <div className={styles.mixDetails}>
+                                                    <h6>Tracks:</h6>
+                                                    <ul>
+                                                      {mix.tracks.map(track => (
+                                                        <li key={track.id}>
+                                                          <span>{track.name} (Current Track: {track.currentTrack})</span>
+                                                        </li>
+                                                      ))}
+                                                    </ul>
+                                                  </div>
+                                                )}
+                                              </li>
+                                            ))}
+                                          </ul>
+                                        </div>
+                                      )}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
                           </li>
                         ))}
                       </ul>
                     </div>
-                  </li>
-                ))}
-              </ul>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         ) : (

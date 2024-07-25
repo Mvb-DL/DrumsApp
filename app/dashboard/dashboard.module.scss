@@ -1,24 +1,35 @@
-/* styles/dashboard.module.scss */
 .container {
-  @apply p-6 bg-gray-100 min-h-screen;
+  padding: 20px;
 }
 
 .formContainer {
-  @apply bg-white p-6 rounded-lg shadow-md;
+  margin-top: 20px;
 }
 
 .formGroup {
-  @apply mb-4;
+  margin-bottom: 15px;
 }
 
-.label {
-  @apply block text-gray-700 font-bold mb-2;
+.formGroup label {
+  display: block;
+  margin-bottom: 5px;
 }
 
-.input {
-  @apply shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring;
+.formGroup input,
+.formGroup select {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
 }
 
 .submitButton {
-  @apply bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring;
+  padding: 10px 20px;
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.submitButton:hover {
+  background-color: #005bb5;
 }
