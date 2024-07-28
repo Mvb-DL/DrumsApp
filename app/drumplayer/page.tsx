@@ -193,9 +193,15 @@ const DrumPlayer = () => {
                       <tbody>
                         {[...Array(8)].map((_, rowIndex) => (
                           <tr key={rowIndex}>
-                            {[...Array(10)].map((_, colIndex) => (
-                              <td key={colIndex}>{`Field ${rowIndex * 10 + colIndex + 1}`}</td>
-                            ))}
+                            {[...Array(10)].map((_, colIndex) => {
+                              const trackIndex = rowIndex * 10 + colIndex;
+                              const track = selectedMix.tracks[trackIndex];
+                              return (
+                                <td key={colIndex}>
+                                  {track ? `${track.name} (Current Track: ${track.currentTrack})` : ''}
+                                </td>
+                              );
+                            })}
                           </tr>
                         ))}
                       </tbody>

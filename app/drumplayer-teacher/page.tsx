@@ -39,22 +39,35 @@ interface Track {
   currentTrack: string;
 }
 
+interface Student {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  trackId: number;
+}
+
 const DrumPlayerTeacher = () => {
   const { user } = useAuth();
   const router = useRouter();
   const [parts, setParts] = useState<Part[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [openPartId, setOpenPartId] = useState<number | null>(null);
   const [openLessonId, setOpenLessonId] = useState<number | null>(null);
   const [openSoloId, setOpenSoloId] = useState<number | null>(null);
   const [openMixId, setOpenMixId] = useState<number | null>(null);
   const [selectedMix, setSelectedMix] = useState<Mix | null>(null);
+  const [newStudent, setNewStudent] = useState({ firstName: '', lastName: '', email: '', password: '', trackId: '', teacherId: user?.id });
 
   useEffect(() => {
     if (!user) {
       router.push('/auth');
     } else if (user.role === 'admin') {
       router.push('/dashboard');
+    } else {
+      fetchStudents();
     }
   }, [user, router]);
 
@@ -74,6 +87,53 @@ const DrumPlayerTeacher = () => {
 
     fetchParts();
   }, []);
+
+  const fetchStudents = async () => {
+    try {
+      const response = await fetch(`/api/teachers/${user?.id}/students`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch students');
+      }
+      const data: Student[] = await response.json();
+      setStudents(data);
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewStudent(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+    try {
+      const response = await fetch('/api/students', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newStudent),
+      });
+
+      if (response.ok) {
+        setSuccess('Student added successfully!');
+        setNewStudent({ firstName: '', lastName: '', email: '', password: '', trackId: '', teacherId: user?.id });
+        fetchStudents();
+      } else {
+        const result = await response.json();
+        setError(result.error || 'Failed to add student');
+      }
+    } catch (error) {
+      setError('Failed to add student');
+    }
+  };
 
   const togglePart = (partId: number) => {
     if (openPartId === partId) {
@@ -127,6 +187,7 @@ const DrumPlayerTeacher = () => {
             <p>Email: {user.email}</p>
             <p>Role: {user.role}</p>
             {error && <p className={styles.error}>{error}</p>}
+            {success && <p className={styles.success}>{success}</p>}
             <button onClick={collapseAll} className={styles.collapseButton}>Einklappen</button> 
             <div className={selectedMix ? styles.selectedPartContainer : styles.partsRow}>
               {parts.map(part => (
@@ -201,9 +262,15 @@ const DrumPlayerTeacher = () => {
                       <tbody>
                         {[...Array(8)].map((_, rowIndex) => (
                           <tr key={rowIndex}>
-                            {[...Array(10)].map((_, colIndex) => (
-                              <td key={colIndex}>{`Field ${rowIndex * 10 + colIndex + 1}`}</td>
-                            ))}
+                            {[...Array(10)].map((_, colIndex) => {
+                              const trackIndex = rowIndex * 10 + colIndex;
+                              const track = selectedMix.tracks[trackIndex];
+                              return (
+                                <td key={colIndex}>
+                                  {track ? `${track.name} (Current Track: ${track.currentTrack})` : ''}
+                                </td>
+                              );
+                            })}
                           </tr>
                         ))}
                       </tbody>
@@ -211,6 +278,77 @@ const DrumPlayerTeacher = () => {
                   </div>
                 </div>
               )}
+            </div>
+            <div className={styles.formContainer}>
+              <h3>Add New Student</h3>
+              <form onSubmit={handleSubmit}>
+                <input
+                  type="text"
+                  name="firstName"
+                  placeholder="First Name"
+                  value={newStudent.firstName}
+                  onChange={handleInputChange}
+                  required
+                />
+                <input
+                  type="text"
+                  name="lastName"
+                  placeholder="Last Name"
+                  value={newStudent.lastName}
+                  onChange={handleInputChange}
+                  required
+                />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  value={newStudent.email}
+                  onChange={handleInputChange}
+                  required
+                />
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  value={newStudent.password}
+                  onChange={handleInputChange}
+                  required
+                />
+                <input
+                  type="text"
+                  name="trackId"
+                  placeholder="Track ID"
+                  value={newStudent.trackId}
+                  onChange={handleInputChange}
+                  required
+                />
+                <button type="submit">Add Student</button>
+              </form>
+              {error && <p className={styles.error}>{error}</p>}
+              {success && <p className={styles.success}>{success}</p>}
+            </div>
+            <div className={styles.studentListContainer}>
+              <h3>Registered Students</h3>
+              <table className={styles.studentTable}>
+                <thead>
+                  <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Track ID</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {students.map(student => (
+                    <tr key={student.id}>
+                      <td>{student.firstName}</td>
+                      <td>{student.lastName}</td>
+                      <td>{student.email}</td>
+                      <td>{student.trackId}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         ) : (
