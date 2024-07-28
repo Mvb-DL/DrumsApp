@@ -217,6 +217,20 @@ const DrumPlayerTeacher = () => {
     }
   };
 
+  const handleDragStart = (e, track) => {
+    e.dataTransfer.setData('track', JSON.stringify(track));
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const track = JSON.parse(e.dataTransfer.getData('track'));
+    setEmailText((prevText) => `${prevText}\n${track.name} (Current Track: ${track.currentTrack})`);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
   return (
     <Layout>
       <div className={styles.container}>
@@ -274,7 +288,11 @@ const DrumPlayerTeacher = () => {
                                                       <h6>Tracks:</h6>
                                                       <ul>
                                                         {mix.tracks.map(track => (
-                                                          <li key={track.id}>
+                                                          <li
+                                                            key={track.id}
+                                                            draggable
+                                                            onDragStart={(e) => handleDragStart(e, track)}
+                                                          >
                                                             <span>{track.name} (Current Track: {track.currentTrack})</span>
                                                           </li>
                                                         ))}
@@ -311,7 +329,11 @@ const DrumPlayerTeacher = () => {
                               const trackIndex = rowIndex * 10 + colIndex;
                               const track = selectedMix.tracks[trackIndex];
                               return (
-                                <td key={colIndex}>
+                                <td
+                                  key={colIndex}
+                                  draggable
+                                  onDragStart={(e) => handleDragStart(e, track)}
+                                >
                                   {track ? `${track.name} (Current Track: ${track.currentTrack})` : ''}
                                 </td>
                               );
@@ -414,6 +436,8 @@ const DrumPlayerTeacher = () => {
                     placeholder="Message"
                     value={emailText}
                     onChange={(e) => setEmailText(e.target.value)}
+                    onDragOver={handleDragOver}
+                    onDrop={handleDrop}
                     required
                   />
                   <button type="submit">Send Email</button>
