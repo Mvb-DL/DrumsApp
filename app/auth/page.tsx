@@ -9,13 +9,14 @@ import { useAuth } from '../context/AuthContext';
 
 export default function AuthPage() {
   const [role, setRole] = useState('customer');
-  const [error, setError] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [registerError, setRegisterError] = useState('');
   const router = useRouter();
   const { login } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(''); // Reset error
+    setLoginError(''); // Reset login error
     const formData = new FormData(e.target);
     const data = {
       email: formData.get('email') as string,
@@ -45,17 +46,17 @@ export default function AuthPage() {
         }
       } else {
         const result = await response.json();
-        setError(result.error || 'Invalid email or password');
+        setLoginError(result.error || 'Invalid email or password');
       }
     } catch (error) {
       console.error('Login failed', error);
-      setError('Login failed');
+      setLoginError('Login failed');
     }
   };
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    setError(''); 
+    setRegisterError(''); // Reset registration error
     const formData = new FormData(e.target);
     const data = {
       firstName: formData.get('firstName') as string,
@@ -95,11 +96,11 @@ export default function AuthPage() {
         }
       } else {
         const result = await response.json();
-        setError(result.error || 'Registration failed');
+        setRegisterError(result.error || 'Registration failed');
       }
     } catch (error) {
       console.error('Registration failed', error);
-      setError('Registration failed');
+      setRegisterError('Registration failed');
     }
   };
 
@@ -114,7 +115,7 @@ export default function AuthPage() {
               <input name="password" type="password" placeholder="Password" className={styles.input} required />
               <button type="submit" className={styles.button}>Login</button>
             </form>
-            {error && <p className={styles.error}>{error}</p>}
+            {loginError && <p className={styles.error}>{loginError}</p>}
             <div className={styles.backLink}>
               <Link href="/">Back to Home</Link>
             </div>
@@ -148,7 +149,7 @@ export default function AuthPage() {
 
               <button type="submit" className={styles.button}>Register</button>
             </form>
-            {error && <p className={styles.error}>{error}</p>}
+            {registerError && <p className={styles.error}>{registerError}</p>}
             <div className={styles.backLink}>
               <Link href="/">Back to Home</Link>
             </div>
