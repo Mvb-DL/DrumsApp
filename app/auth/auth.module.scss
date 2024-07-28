@@ -1,0 +1,45 @@
+/* app/auth/auth.module.scss */
+.container {
+    @apply flex flex-col items-center justify-center min-h-screen py-2;
+  }
+  
+  .authWrapper {
+    @apply flex justify-around w-full max-w-5xl;
+  }
+  
+  .loginSection, .registerSection {
+    @apply flex flex-col items-center justify-center p-4 border border-gray-300 rounded;
+    width: 45%;
+  }
+  
+  .form {
+    @apply flex flex-col items-center justify-center;
+  }
+  
+  .input {
+    @apply p-2 m-2 border border-gray-300 rounded;
+  }
+  
+  .button {
+    @apply p-2 m-2 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-700;
+  }
+  
+  .error {
+    @apply text-red-500 mt-2;
+  }
+  
+  .backLink {
+    @apply mt-4;
+    a {
+      @apply text-blue-500 hover:underline;
+    }
+  }
+  
+  .roleSelection {
+    @apply flex justify-around w-full max-w-md mb-4;
+  }
+  
+  .roleButton {
+    @apply p-2 bg-gray-200 rounded cursor-pointer hover:bg-gray-300;
+  }
+  

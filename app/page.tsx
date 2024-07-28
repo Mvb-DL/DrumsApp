@@ -9,12 +9,12 @@ export default function Home() {
     <div className={styles.container}>
       <h1>Welcome to Our Website</h1>
       <div className={styles.buttonContainer}>
-        <Link href="/auth/login">
+        <Link href="/auth">
           <button className={styles.button}>Login</button>
         </Link>
-        <Link href="/auth/register">
+        {/*<Link href="/auth/register">
           <button className={styles.button}>Register</button>
-        </Link>
+        </Link> */}
         <Link href="/drumplayer">
           <button className={styles.button}>Drum Player</button>
         </Link>
