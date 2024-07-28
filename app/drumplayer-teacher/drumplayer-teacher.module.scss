@@ -1,65 +1,89 @@
 .container {
   padding: 20px;
-}
-
-.addStudentBox {
-  margin-top: 20px;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-}
-
-.form {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
 }
 
-.input {
-  margin-bottom: 10px;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+.partsWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
-.button {
-  padding: 10px;
-  background-color: #0070f3;
-  color: white;
-  border: none;
-  border-radius: 4px;
+.partsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.selectedPartContainer {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.partItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   cursor: pointer;
+  max-width: 150px;
 }
 
-.button:hover {
+.partImage {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.partDetails, .lessonDetails, .soloDetails, .mixDetails {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.collapseButton {
+  margin: 10px 0;
+  padding: 10px 20px;
+  background-color: #0070f3;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.collapseButton:hover {
   background-color: #005bb5;
+}
+
+.mixTableContainer {
+  margin-top: 40px;
+  text-align: center;
+  width: 100%;
+}
+
+.tableWrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.mixTable {
+  border-collapse: collapse;
+}
+
+.mixTable td, .mixTable th {
+  border: 1px solid black;
+  padding: 8px;
+  text-align: center;
 }
 
 .error {
   color: red;
-  margin-top: 10px;
-}
-
-.success {
-  color: green;
-  margin-top: 10px;
-}
-
-.studentList {
-  margin-top: 20px;
-}
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-
-.table th, .table td {
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: left;
-}
-
-.table th {
-  background-color: #f4f4f4;
 }

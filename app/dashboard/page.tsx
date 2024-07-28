@@ -116,9 +116,9 @@ const Dashboard = () => {
     if (response.ok) {
       const newPart = await response.json();
       setParts((prevParts) => [...prevParts, newPart]);
-      setSelectedPartId(newPart.id); // Automatically set the new part ID
+      setSelectedPartId(newPart.id); 
       setNewPartName('');
-      setImage(null); // Clear the image
+      setImage(null); 
       setMessage('Part created successfully');
     } else {
       setMessage('Failed to create part');
@@ -127,50 +127,59 @@ const Dashboard = () => {
 
   return (
     <Layout>
-      <div className={styles.container}>
-        <h1>Admin Dashboard</h1>
+      <div className="container mx-auto p-6 bg-white rounded-lg shadow-lg">
+        <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
         {user ? (
           <div>
-            <h2>Welcome, {user.name} {user.surname}</h2>
-            <p>Email: {user.email}</p>
-            <p>Role: {user.role}</p>
-            <div className={styles.formContainer}>
-              <h2>Create New Part</h2>
+            <h2 className="text-xl font-semibold mb-4">Welcome, {user.name} {user.surname}</h2>
+            <div className="form-container">
+              <h2 className="text-2xl font-bold mb-4">Neuen Part erstellen</h2>
               {parts.length < 6 ? (
-                <form onSubmit={handleCreatePart}>
-                  <div className={styles.formGroup}>
-                    <label htmlFor="newPartName">New Part Name:</label>
+                <form onSubmit={handleCreatePart} className="space-y-4">
+                  <div className="form-group">
+                    <label htmlFor="newPartName" className="block text-sm font-medium text-gray-700">Neuer Partname:</label>
                     <input
                       type="text"
                       id="newPartName"
                       value={newPartName}
                       onChange={(e) => setNewPartName(e.target.value)}
                       required
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                     />
                   </div>
-                  <div className={styles.formGroup}>
-                    <label htmlFor="image">Image:</label>
-                    <input
-                      type="file"
-                      id="image"
-                      onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
-                      required
-                    />
-                  </div>
-                  <button type="submit" className={styles.submitButton}>Create Part</button>
+                  <div className="form-group">
+                      <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">Bild:</label>
+                      <div className="mt-1 flex items-center space-x-4">
+                        <input
+                          type="file"
+                          id="image"
+                          onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
+                          required
+                          className="block w-full text-sm tcursor-pointer focus:outline-none"
+                        />
+                        {image && (
+                          <div className="w-20 h-20 border border-gray-300 rounded-lg overflow-hidden">
+                            <img src={URL.createObjectURL(image)} alt="Selected" className="w-full h-full object-cover"/>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                  <button type="submit" className="btn btn-primary part-button">Part erstellen</button>
                 </form>
               ) : (
                 <p>Maximum number of parts created</p>
               )}
-              <h2>Add Information to Part</h2>
-              <form onSubmit={handleSubmit}>
-                <div className={styles.formGroup}>
-                  <label htmlFor="selectedPartId">Select Part:</label>
+              <h2 className="text-2xl font-bold mt-6 mb-4">Add Information to Part</h2>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="form-group">
+                  <label htmlFor="selectedPartId" className="block text-sm font-medium text-gray-700">Select Part:</label>
                   <select
                     id="selectedPartId"
                     value={selectedPartId ?? ''}
                     onChange={(e) => setSelectedPartId(e.target.value ? parseInt(e.target.value) : null)}
                     required
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   >
                     <option value="" disabled>Select a Part</option>
                     {parts.map((part) => (
@@ -178,121 +187,146 @@ const Dashboard = () => {
                     ))}
                   </select>
                 </div>
-                <div className={styles.formGroup}>
-                  <label htmlFor="name">Part Name:</label>
+                <div className="form-group">
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700">Part Name:</label>
                   <input
                     type="text"
                     id="name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
                 </div>
-                <div className={styles.formGroup}>
-                  <label htmlFor="lessonName">Lesson Name:</label>
+                <div className="form-group">
+                  <label htmlFor="lessonName" className="block text-sm font-medium text-gray-700">Lesson Name:</label>
                   <input
                     type="text"
                     id="lessonName"
                     value={lessonName}
                     onChange={(e) => setLessonName(e.target.value)}
                     required
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
                 </div>
-                <div className={styles.formGroup}>
-                  <label htmlFor="soloName">Solo Name:</label>
+                <div className="form-group">
+                  <label htmlFor="soloName" className="block text-sm font-medium text-gray-700">Solo Name:</label>
                   <input
                     type="text"
                     id="soloName"
                     value={soloName}
                     onChange={(e) => setSoloName(e.target.value)}
                     required
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
                 </div>
-                <div className={styles.formGroup}>
-                  <label htmlFor="soloLevel">Solo Level:</label>
+                <div className="form-group">
+                  <label htmlFor="soloLevel" className="block text-sm font-medium text-gray-700">Solo Level:</label>
                   <input
                     type="number"
                     id="soloLevel"
                     value={soloLevel}
                     onChange={(e) => setSoloLevel(parseInt(e.target.value))}
                     required
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
                 </div>
-                <div className={styles.formGroup}>
-                  <label htmlFor="mixName">Mix Name:</label>
+                <div className="form-group">
+                  <label htmlFor="mixName" className="block text-sm font-medium text-gray-700">Mix Name:</label>
                   <input
                     type="text"
                     id="mixName"
                     value={mixName}
                     onChange={(e) => setMixName(e.target.value)}
                     required
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
                 </div>
-                <div className={styles.formGroup}>
-                  <label htmlFor="mixLevel">Mix Level:</label>
+                <div className="form-group">
+                  <label htmlFor="mixLevel" className="block text-sm font-medium text-gray-700">Mix Level:</label>
                   <input
                     type="number"
                     id="mixLevel"
                     value={mixLevel}
                     onChange={(e) => setMixLevel(parseInt(e.target.value))}
                     required
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
                 </div>
-                <div className={styles.formGroup}>
-                  <label htmlFor="trackName">Track Name:</label>
+                <div className="form-group">
+                  <label htmlFor="trackName" className="block text-sm font-medium text-gray-700">Track Name:</label>
                   <input
                     type="text"
                     id="trackName"
                     value={trackName}
                     onChange={(e) => setTrackName(e.target.value)}
                     required
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
                 </div>
-                <div className={styles.formGroup}>
-                  <label htmlFor="currentTrack">Current Track URL:</label>
+                <div className="form-group">
+                  <label htmlFor="currentTrack" className="block text-sm font-medium text-gray-700">Current Track URL:</label>
                   <input
                     type="text"
                     id="currentTrack"
                     value={currentTrack}
                     onChange={(e) => setCurrentTrack(e.target.value)}
                     required
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
                 </div>
-                <div className={styles.formGroup}>
-                  <label htmlFor="trackLevelName">Track Level Name:</label>
+                <div className="form-group">
+                  <label htmlFor="trackLevelName" className="block text-sm font-medium text-gray-700">Track Level Name:</label>
                   <input
                     type="text"
                     id="trackLevelName"
                     value={trackLevelName}
                     onChange={(e) => setTrackLevelName(e.target.value)}
                     required
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
                 </div>
-                <div className={styles.formGroup}>
-                  <label htmlFor="bpm">BPM:</label>
-                  <input
-                    type="number"
-                    id="bpm"
-                    value={bpm}
-                    min="0"
-                    max="240"
-                    onChange={(e) => setBpm(parseInt(e.target.value))}
-                    required
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label htmlFor="instruments">Instruments (JSON):</label>
+
+                    <div className="form-group">
+                      <label htmlFor="bpm" className="block text-sm font-medium text-gray-700">BPM:</label>
+                      <div className="mt-1 flex items-center space-x-4">
+                        <input
+                          type="range"
+                          id="bpm"
+                          value={bpm}
+                          min="0"
+                          max="240"
+                          onChange={(e) => setBpm(parseInt(e.target.value))}
+                          required
+                          className="block w-full"
+                        />
+                        <input
+                          type="number"
+                          id="bpm-number"
+                          value={bpm}
+                          min="0"
+                          max="240"
+                          onChange={(e) => setBpm(parseInt(e.target.value))}
+                          required
+                          className="block w-20 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        />
+                      </div>
+                    </div>
+
+                <div className="form-group">
+                  <label htmlFor="instruments" className="block text-sm font-medium text-gray-700">Instrumente:</label>
                   <input
                     type="text"
                     id="instruments"
                     value={instruments}
                     onChange={(e) => setInstruments(e.target.value)}
                     required
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
                 </div>
-                <button type="submit" className={styles.submitButton}>Create Part and Related Entities</button>
+                <button type="submit" className="btn btn-primary">Create Part and Related Entities</button>
               </form>
-              {message && <p>{message}</p>}
+              {message && <p className="mt-4 text-sm text-green-600">{message}</p>}
             </div>
           </div>
         ) : (

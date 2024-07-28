@@ -1,182 +1,215 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../context/AuthContext'; // Adjust the path if necessary
-import Layout from '../components/Layout'; // Adjust the path if necessary
-import styles from './drumplayer-teacher.module.scss'; // Assuming you have SCSS for styling
+import { useAuth } from '../context/AuthContext'; 
+import Layout from '../components/Layout'; 
+import styles from './drumplayer-teacher.module.scss'; 
+
+interface Part {
+  id: number;
+  name: string;
+  imageUrl?: string;
+  lessons: Lesson[];
+}
+
+interface Lesson {
+  id: number;
+  name: string;
+  solos: Solo[];
+}
+
+interface Solo {
+  id: number;
+  name: string;
+  level: number;
+  mixes: Mix[];
+}
+
+interface Mix {
+  id: number;
+  name: string;
+  level: number;
+  tracks: Track[];
+}
+
+interface Track {
+  id: number;
+  name: string;
+  currentTrack: string;
+}
 
 const DrumPlayerTeacher = () => {
   const { user } = useAuth();
   const router = useRouter();
-  const [students, setStudents] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [studentFirstName, setStudentFirstName] = useState('');
-  const [studentLastName, setStudentLastName] = useState('');
-  const [studentEmail, setStudentEmail] = useState('');
-  const [studentPassword, setStudentPassword] = useState('');
-  const [studentTrackId, setStudentTrackId] = useState('');
-  const [studentError, setStudentError] = useState('');
-  const [studentSuccess, setStudentSuccess] = useState('');
+  const [parts, setParts] = useState<Part[]>([]);
+  const [error, setError] = useState('');
+  const [openPartId, setOpenPartId] = useState<number | null>(null);
+  const [openLessonId, setOpenLessonId] = useState<number | null>(null);
+  const [openSoloId, setOpenSoloId] = useState<number | null>(null);
+  const [openMixId, setOpenMixId] = useState<number | null>(null);
+  const [selectedMix, setSelectedMix] = useState<Mix | null>(null);
 
   useEffect(() => {
     if (user && user.role === 'admin') {
       router.push('/dashboard');
     }
-
-    if (user && user.role === 'teacher') {
-      fetchStudents();
-    }
   }, [user, router]);
 
-  const fetchStudents = async () => {
-    try {
-      const response = await fetch(`/api/teachers/${user.id}/students`);
-      if (response.ok) {
-        const data = await response.json();
-        setStudents(data);
-      } else {
-        console.error('Failed to fetch students');
+  useEffect(() => {
+    const fetchParts = async () => {
+      try {
+        const response = await fetch('/api/parts');
+        if (!response.ok) {
+          throw new Error('Failed to fetch parts');
+        }
+        const data: Part[] = await response.json();
+        setParts(data);
+      } catch (error) {
+        setError(error.message);
       }
-    } catch (error) {
-      console.error('Failed to fetch students', error);
-    } finally {
-      setLoading(false);
+    };
+
+    fetchParts();
+  }, []);
+
+  const togglePart = (partId: number) => {
+    if (openPartId === partId) {
+      setOpenPartId(null);
+      setOpenLessonId(null);
+      setOpenSoloId(null);
+      setOpenMixId(null);
+      setSelectedMix(null);
+    } else {
+      setOpenPartId(partId);
+      setOpenLessonId(null);
+      setOpenSoloId(null);
+      setOpenMixId(null);
+      setSelectedMix(null);
     }
   };
 
-  const handleAddStudent = async (e) => {
-    e.preventDefault();
-    setStudentError('');
-    setStudentSuccess('');
+  const toggleLesson = (lessonId: number) => {
+    setOpenLessonId(openLessonId === lessonId ? null : lessonId);
+    setOpenSoloId(null);
+    setOpenMixId(null);
+    setSelectedMix(null);
+  };
 
-    if (!user) {
-      setStudentError('User is not authenticated.');
-      return;
-    }
+  const toggleSolo = (soloId: number) => {
+    setOpenSoloId(openSoloId === soloId ? null : soloId);
+    setOpenMixId(null);
+    setSelectedMix(null);
+  };
 
-    try {
-      const response = await fetch('/api/students', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          firstName: studentFirstName,
-          lastName: studentLastName,
-          email: studentEmail,
-          password: studentPassword,
-          trackId: studentTrackId,
-          teacherId: user.id // Ensure this is an integer
-        }),
-      });
+  const toggleMix = (mixId: number, mix: Mix) => {
+    setOpenMixId(openMixId === mixId ? null : mixId);
+    setSelectedMix(openMixId === mixId ? null : mix);
+  };
 
-      if (response.ok) {
-        setStudentSuccess('Student added successfully!');
-        setStudentFirstName('');
-        setStudentLastName('');
-        setStudentEmail('');
-        setStudentPassword('');
-        setStudentTrackId('');
-        fetchStudents(); // Refresh the student list
-      } else {
-        const result = await response.json();
-        setStudentError(result.error || 'Failed to add student');
-      }
-    } catch (error) {
-      console.error('Failed to add student', error);
-      setStudentError('Failed to add student');
-    }
+  const collapseAll = () => {
+    setOpenPartId(null);
+    setOpenLessonId(null);
+    setOpenSoloId(null);
+    setOpenMixId(null);
+    setSelectedMix(null);
   };
 
   return (
     <Layout>
       <div className={styles.container}>
-        <h1>Drum Player Teacher</h1>
+        <h1>Drum Player</h1>
         {user ? (
           <div>
             <h2>Welcome, {user.name} {user.surname}</h2>
             <p>Email: {user.email}</p>
             <p>Role: {user.role}</p>
-            {user.role === 'teacher' && (
-              <>
-                <div className={styles.addStudentBox}>
-                  <h3>Add New Student</h3>
-                  <form className={styles.form} onSubmit={handleAddStudent}>
-                    <input
-                      type="text"
-                      placeholder="Student First Name"
-                      value={studentFirstName}
-                      onChange={(e) => setStudentFirstName(e.target.value)}
-                      required
-                      className={styles.input}
-                    />
-                    <input
-                      type="text"
-                      placeholder="Student Last Name"
-                      value={studentLastName}
-                      onChange={(e) => setStudentLastName(e.target.value)}
-                      required
-                      className={styles.input}
-                    />
-                    <input
-                      type="email"
-                      placeholder="Student Email"
-                      value={studentEmail}
-                      onChange={(e) => setStudentEmail(e.target.value)}
-                      required
-                      className={styles.input}
-                    />
-                    <input
-                      type="password"
-                      placeholder="Student Password"
-                      value={studentPassword}
-                      onChange={(e) => setStudentPassword(e.target.value)}
-                      required
-                      className={styles.input}
-                    />
-                    <input
-                      type="text"
-                      placeholder="Track ID"
-                      value={studentTrackId}
-                      onChange={(e) => setStudentTrackId(e.target.value)}
-                      required
-                      className={styles.input}
-                    />
-                    <button type="submit" className={styles.button}>Add Student</button>
-                  </form>
-                  {studentError && <p className={styles.error}>{studentError}</p>}
-                  {studentSuccess && <p className={styles.success}>{studentSuccess}</p>}
-                </div>
-                <div className={styles.studentList}>
-                  <h3>Your Students</h3>
-                  {loading ? (
-                    <p>Loading...</p>
-                  ) : (
-                    <table className={styles.table}>
-                      <thead>
-                        <tr>
-                          <th>First Name</th>
-                          <th>Last Name</th>
-                          <th>Email</th>
-                          <th>Track ID</th>
-                        </tr>
-                      </thead>
+            {error && <p className={styles.error}>{error}</p>}
+            <button onClick={collapseAll} className={styles.collapseButton}>Einklappen</button> 
+            <div className={selectedMix ? styles.selectedPartContainer : styles.partsRow}>
+              {parts.map(part => (
+                (selectedMix && openPartId !== part.id && openPartId !== null) ? null : (
+                  <div key={part.id} className={styles.partItem}>
+                    <div onClick={() => togglePart(part.id)}>
+                      {part.imageUrl && <img src={part.imageUrl} alt={part.name} className={styles.partImage} />}
+                      <span>{part.name}</span>
+                    </div>
+                    {openPartId === part.id && (
+                      <div className={styles.partDetails}>
+                        <h5>Lessons:</h5>
+                        <ul>
+                          {part.lessons.map(lesson => (
+                            <li key={lesson.id}>
+                              <div className={styles.lessonHeader} onClick={() => toggleLesson(lesson.id)}>
+                                <span>{lesson.name}</span>
+                              </div>
+                              {openLessonId === lesson.id && (
+                                <div className={styles.lessonDetails}>
+                                  <h6>Solos:</h6>
+                                  <ul>
+                                    {lesson.solos.map(solo => (
+                                      <li key={solo.id}>
+                                        <div className={styles.soloHeader} onClick={() => toggleSolo(solo.id)}>
+                                          <span>{solo.name} (Level: {solo.level})</span>
+                                        </div>
+                                        {openSoloId === solo.id && (
+                                          <div className={styles.soloDetails}>
+                                            <h6>Mixes:</h6>
+                                            <ul>
+                                              {solo.mixes.map(mix => (
+                                                <li key={mix.id}>
+                                                  <div className={styles.mixHeader} onClick={() => toggleMix(mix.id, mix)}>
+                                                    <span>{mix.name} (Level: {mix.level})</span>
+                                                  </div>
+                                                  {openMixId === mix.id && (
+                                                    <div className={styles.mixDetails}>
+                                                      <h6>Tracks:</h6>
+                                                      <ul>
+                                                        {mix.tracks.map(track => (
+                                                          <li key={track.id}>
+                                                            <span>{track.name} (Current Track: {track.currentTrack})</span>
+                                                          </li>
+                                                        ))}
+                                                      </ul>
+                                                    </div>
+                                                  )}
+                                                </li>
+                                              ))}
+                                            </ul>
+                                          </div>
+                                        )}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )
+              ))}
+              {selectedMix && (
+                <div className={styles.mixTableContainer}>
+                  <h3>Selected Mix: {selectedMix.name}</h3>
+                  <div className={styles.tableWrapper}>
+                    <table className={styles.mixTable}>
                       <tbody>
-                        {students.map(student => (
-                          <tr key={student.id}>
-                            <td>{student.firstName}</td>
-                            <td>{student.lastName}</td>
-                            <td>{student.email}</td>
-                            <td>{student.trackId}</td>
+                        {[...Array(8)].map((_, rowIndex) => (
+                          <tr key={rowIndex}>
+                            {[...Array(10)].map((_, colIndex) => (
+                              <td key={colIndex}>{`Field ${rowIndex * 10 + colIndex + 1}`}</td>
+                            ))}
                           </tr>
                         ))}
                       </tbody>
                     </table>
-                  )}
+                  </div>
                 </div>
-              </>
-            )}
+              )}
+            </div>
           </div>
         ) : (
           <p>Please log in to view your details.</p>
