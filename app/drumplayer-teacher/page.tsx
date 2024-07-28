@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../context/AuthContext'; 
-import Layout from '../components/Layout'; 
-import styles from './drumplayer-teacher.module.scss'; 
+import { useAuth } from '../context/AuthContext';
+import Layout from '../components/Layout';
+import styles from './drumplayer-teacher.module.scss';
 
 interface Part {
   id: number;
@@ -54,12 +54,17 @@ const DrumPlayerTeacher = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [previewUrl, setPreviewUrl] = useState('');
   const [openPartId, setOpenPartId] = useState<number | null>(null);
   const [openLessonId, setOpenLessonId] = useState<number | null>(null);
   const [openSoloId, setOpenSoloId] = useState<number | null>(null);
   const [openMixId, setOpenMixId] = useState<number | null>(null);
   const [selectedMix, setSelectedMix] = useState<Mix | null>(null);
   const [newStudent, setNewStudent] = useState({ firstName: '', lastName: '', email: '', password: '', trackId: '', teacherId: user?.id });
+  const [showEmailForm, setShowEmailForm] = useState(false);
+  const [currentEmail, setCurrentEmail] = useState('');
+  const [emailSubject, setEmailSubject] = useState('');
+  const [emailText, setEmailText] = useState('');
 
   useEffect(() => {
     if (!user) {
@@ -177,6 +182,41 @@ const DrumPlayerTeacher = () => {
     setSelectedMix(null);
   };
 
+  const openEmailForm = (email) => {
+    setCurrentEmail(email);
+    setShowEmailForm(true);
+  };
+
+  const sendEmail = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+    try {
+      const response = await fetch('/api/teachers/mail', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ to: currentEmail, subject: emailSubject, text: emailText }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setSuccess('Email sent successfully!');
+        setPreviewUrl(result.previewUrl);
+        window.open(result.previewUrl, '_blank');
+        setShowEmailForm(false);
+        setEmailSubject('');
+        setEmailText('');
+      } else {
+        const result = await response.json();
+        setError(result.error || 'Failed to send email');
+      }
+    } catch (error) {
+      setError('Failed to send email');
+    }
+  };
+
   return (
     <Layout>
       <div className={styles.container}>
@@ -188,7 +228,12 @@ const DrumPlayerTeacher = () => {
             <p>Role: {user.role}</p>
             {error && <p className={styles.error}>{error}</p>}
             {success && <p className={styles.success}>{success}</p>}
-            <button onClick={collapseAll} className={styles.collapseButton}>Einklappen</button> 
+            {previewUrl && (
+              <p>
+                Preview your email <a href={previewUrl} target="_blank" rel="noopener noreferrer">here</a>.
+              </p>
+            )}
+            <button onClick={collapseAll} className={styles.collapseButton}>Einklappen</button>
             <div className={selectedMix ? styles.selectedPartContainer : styles.partsRow}>
               {parts.map(part => (
                 (selectedMix && openPartId !== part.id && openPartId !== null) ? null : (
@@ -336,6 +381,7 @@ const DrumPlayerTeacher = () => {
                     <th>Last Name</th>
                     <th>Email</th>
                     <th>Track ID</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -345,11 +391,35 @@ const DrumPlayerTeacher = () => {
                       <td>{student.lastName}</td>
                       <td>{student.email}</td>
                       <td>{student.trackId}</td>
+                      <td><button onClick={() => openEmailForm(student.email)}>Send Email</button></td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
+            {showEmailForm && (
+              <div className={styles.emailFormContainer}>
+                <h3>Send Email to {currentEmail}</h3>
+                <form onSubmit={sendEmail}>
+                  <input
+                    type="text"
+                    name="subject"
+                    placeholder="Subject"
+                    value={emailSubject}
+                    onChange={(e) => setEmailSubject(e.target.value)}
+                    required
+                  />
+                  <textarea
+                    name="text"
+                    placeholder="Message"
+                    value={emailText}
+                    onChange={(e) => setEmailText(e.target.value)}
+                    required
+                  />
+                  <button type="submit">Send Email</button>
+                </form>
+              </div>
+            )}
           </div>
         ) : (
           <p>Redirecting to login...</p>
