@@ -48,6 +48,7 @@ const DrumPlayer = () => {
   const [openLessonId, setOpenLessonId] = useState<number | null>(null);
   const [openSoloId, setOpenSoloId] = useState<number | null>(null);
   const [openMixId, setOpenMixId] = useState<number | null>(null);
+  const [selectedMix, setSelectedMix] = useState<Mix | null>(null);
 
   useEffect(() => {
     if (user && user.role === 'admin') {
@@ -77,21 +78,25 @@ const DrumPlayer = () => {
     setOpenLessonId(null);
     setOpenSoloId(null);
     setOpenMixId(null);
+    setSelectedMix(null);
   };
 
   const toggleLesson = (lessonId: number) => {
     setOpenLessonId(openLessonId === lessonId ? null : lessonId);
     setOpenSoloId(null);
     setOpenMixId(null);
+    setSelectedMix(null);
   };
 
   const toggleSolo = (soloId: number) => {
     setOpenSoloId(openSoloId === soloId ? null : soloId);
     setOpenMixId(null);
+    setSelectedMix(null);
   };
 
-  const toggleMix = (mixId: number) => {
+  const toggleMix = (mixId: number, mix: Mix) => {
     setOpenMixId(openMixId === mixId ? null : mixId);
+    setSelectedMix(openMixId === mixId ? null : mix);
   };
 
   const collapseAll = () => {
@@ -99,6 +104,7 @@ const DrumPlayer = () => {
     setOpenLessonId(null);
     setOpenSoloId(null);
     setOpenMixId(null);
+    setSelectedMix(null);
   };
 
   return (
@@ -112,75 +118,89 @@ const DrumPlayer = () => {
             <p>Role: {user.role}</p>
             {error && <p className={styles.error}>{error}</p>}
             <button onClick={collapseAll} className={styles.collapseButton}>Einklappen</button> 
-            <div>
-              <h3>Parts</h3>
-              <div className={styles.partsRow}>
-                {parts.map(part => (
-                  <div key={part.id} className={styles.partItem} onClick={() => togglePart(part.id)}>
-                    {part.imageUrl && <img src={part.imageUrl} alt={part.name} className={styles.partImage} />}
-                    <span>{part.name}</span>
-                  </div>
-                ))}
-              </div>
+            <div className={selectedMix && user.role === 'Customer' ? styles.selectedPartContainer : styles.partsRow}>
               {parts.map(part => (
-                <div key={part.id}>
-                  {openPartId === part.id && (
-                    <div className={styles.partDetails}>
-                      <h4>{part.name}</h4>
-                      <h5>Lessons:</h5>
-                      <ul>
-                        {part.lessons.map(lesson => (
-                          <li key={lesson.id}>
-                            <div className={styles.lessonHeader} onClick={() => toggleLesson(lesson.id)}>
-                              <span>{lesson.name}</span>
-                            </div>
-                            {openLessonId === lesson.id && (
-                              <div className={styles.lessonDetails}>
-                                <h6>Solos:</h6>
-                                <ul>
-                                  {lesson.solos.map(solo => (
-                                    <li key={solo.id}>
-                                      <div className={styles.soloHeader} onClick={() => toggleSolo(solo.id)}>
-                                        <span>{solo.name} (Level: {solo.level})</span>
-                                      </div>
-                                      {openSoloId === solo.id && (
-                                        <div className={styles.soloDetails}>
-                                          <h6>Mixes:</h6>
-                                          <ul>
-                                            {solo.mixes.map(mix => (
-                                              <li key={mix.id}>
-                                                <div className={styles.mixHeader} onClick={() => toggleMix(mix.id)}>
-                                                  <span>{mix.name} (Level: {mix.level})</span>
-                                                </div>
-                                                {openMixId === mix.id && (
-                                                  <div className={styles.mixDetails}>
-                                                    <h6>Tracks:</h6>
-                                                    <ul>
-                                                      {mix.tracks.map(track => (
-                                                        <li key={track.id}>
-                                                          <span>{track.name} (Current Track: {track.currentTrack})</span>
-                                                        </li>
-                                                      ))}
-                                                    </ul>
-                                                  </div>
-                                                )}
-                                              </li>
-                                            ))}
-                                          </ul>
-                                        </div>
-                                      )}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            )}
-                          </li>
-                        ))}
-                      </ul>
+                (selectedMix && openPartId !== part.id && openPartId !== null) ? null : (
+                  <div key={part.id} className={styles.partItem}>
+                    <div onClick={() => togglePart(part.id)}>
+                      {part.imageUrl && <img src={part.imageUrl} alt={part.name} className={styles.partImage} />}
+                      <span>{part.name}</span>
                     </div>
-                  )}
-                </div>
+                    {openPartId === part.id && (
+                      <div className={styles.partDetails}>
+                        <h5>Lessons:</h5>
+                        <ul>
+                          {part.lessons.map(lesson => (
+                            <li key={lesson.id}>
+                              <div className={styles.lessonHeader} onClick={() => toggleLesson(lesson.id)}>
+                                <span>{lesson.name}</span>
+                              </div>
+                              {openLessonId === lesson.id && (
+                                <div className={styles.lessonDetails}>
+                                  <h6>Solos:</h6>
+                                  <ul>
+                                    {lesson.solos.map(solo => (
+                                      <li key={solo.id}>
+                                        <div className={styles.soloHeader} onClick={() => toggleSolo(solo.id)}>
+                                          <span>{solo.name} (Level: {solo.level})</span>
+                                        </div>
+                                        {openSoloId === solo.id && (
+                                          <div className={styles.soloDetails}>
+                                            <h6>Mixes:</h6>
+                                            <ul>
+                                              {solo.mixes.map(mix => (
+                                                <li key={mix.id}>
+                                                  <div className={styles.mixHeader} onClick={() => toggleMix(mix.id, mix)}>
+                                                    <span>{mix.name} (Level: {mix.level})</span>
+                                                  </div>
+                                                  {openMixId === mix.id && user.role === 'Customer' && (
+                                                    <div className={styles.mixDetails}>
+                                                      <h6>Tracks:</h6>
+                                                      <ul>
+                                                        {mix.tracks.map(track => (
+                                                          <li key={track.id}>
+                                                            <span>{track.name} (Current Track: {track.currentTrack})</span>
+                                                          </li>
+                                                        ))}
+                                                      </ul>
+                                                    </div>
+                                                  )}
+                                                </li>
+                                              ))}
+                                            </ul>
+                                          </div>
+                                        )}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )
               ))}
+              {selectedMix && user.role === 'customer' && (
+                <div className={styles.mixTableContainer}>
+                  <h3>Selected Mix: {selectedMix.name}</h3>
+                  <div className={styles.tableWrapper}>
+                    <table className={styles.mixTable}>
+                      <tbody>
+                        {[...Array(8)].map((_, rowIndex) => (
+                          <tr key={rowIndex}>
+                            {[...Array(10)].map((_, colIndex) => (
+                              <td key={colIndex}>{`Field ${rowIndex * 10 + colIndex + 1}`}</td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ) : (
