@@ -8,7 +8,8 @@ import styles from './component_styles/Footer.module.scss';
 const Footer = () => {
   return (
     <footer className={styles.footer}>
-      <Link href="/impressum">Impressum</Link>
+      <Link href="/organization/impressum">Impressum</Link>
+      <Link href="/organization/dsgvo">DSGVO</Link>
     </footer>
   );
 };
