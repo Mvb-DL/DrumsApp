@@ -2,6 +2,7 @@
 import './globals.scss';
 import { ReactNode } from 'react';
 import { AuthProvider } from './context/AuthContext';
+import CookieBanner from "./components/CookieBanner"
 
 export const metadata = {
   title: 'My Next App',
@@ -17,7 +18,8 @@ export default function RootLayout({
     <html lang="en">
       <body>
       <AuthProvider>
-        {children}
+      <CookieBanner />
+        <main>{children}</main>
         </AuthProvider>
       </body>
     </html>
