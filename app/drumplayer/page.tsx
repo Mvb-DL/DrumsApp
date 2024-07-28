@@ -51,7 +51,9 @@ const DrumPlayer = () => {
   const [selectedMix, setSelectedMix] = useState<Mix | null>(null);
 
   useEffect(() => {
-    if (user && user.role === 'admin') {
+    if (!user) {
+      router.push('/auth');
+    } else if (user.role === 'admin') {
       router.push('/dashboard');
     }
   }, [user, router]);
@@ -204,7 +206,7 @@ const DrumPlayer = () => {
             </div>
           </div>
         ) : (
-          <p>Please log in to view your details.</p>
+          <p>Redirecting to login...</p>
         )}
       </div>
     </Layout>

@@ -39,7 +39,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const logout = () => {
     destroyCookie(null, 'user');
-    destroyCookie(null, 'token'); // Assuming the server sets and removes the token cookie
+    destroyCookie(null, 'token');
     setUser(null);
   };
 
